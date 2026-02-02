@@ -1,0 +1,91 @@
+{
+    "edges": [
+        {
+            "edgeDescription": "test2 -> 2",
+            "edgeId": "1",
+            "endNodeId": "2",
+            "maxSpeed": 0.5,
+            "orientation": 0,
+            "planningType": "BezierPath",
+            "released": true,
+            "rotationAllowed": false,
+            "sequenceId": 1,
+            "startNodeId": "8bc3c7ae-bb69-4053-92f3-9a22f13f8670",
+            "trajectory": {
+                "controlPoints": [
+                    {
+                        "weight": 1.0,
+                        "x": 47.62108860698107,
+                        "y": 20.83025198920453
+                    },
+                    {
+                        "weight": 1.0,
+                        "x": 47.6194972563725,
+                        "y": 21.715125994602268
+                    },
+                    {
+                        "weight": 1.0,
+                        "x": 47.6194972563725,
+                        "y": 21.715125994602268
+                    },
+                    {
+                        "weight": 1.0,
+                        "x": 47.61790590576392,
+                        "y": 22.6
+                    }
+                ],
+                "degree": 4.0,
+                "knotVector": [
+                    0.0,
+                    0.0,
+                    0.0,
+                    0.0,
+                    1.0,
+                    1.0,
+                    1.0,
+                    1.0
+                ]
+            }
+        }
+    ],
+    "headerId": 3,
+    "manufacturer": "HikRobot",
+    "nodes": [
+        {
+            "nodeDescription": "test2",
+            "nodeId": "8bc3c7ae-bb69-4053-92f3-9a22f13f8670",
+            "nodePosition": {
+                "allowedDeviationTheta": 3.141592653589793,
+                "allowedDeviationXy": 1.0,
+                "mapDescription": "default",
+                "theta": -1.5707963267948968,
+                "x": 47.62108860698107,
+                "y": 20.83025198920453
+            },
+            "released": true,
+            "rotateDirection": "ROTATE_SELF",
+            "sequenceId": 0
+        },
+        {
+            "nodeDescription": "2",
+            "nodeId": "2",
+            "nodePosition": {
+                "allowedDeviationTheta": 3.141592653589793,
+                "mapDescription": "default",
+                "mapId": "XX",
+                "theta": -1.5707963267948968,
+                "x": 47.61790590576392,
+                "y": 22.6
+            },
+            "released": true,
+            "rotateDirection": "ROTATE_SELF",
+            "sequenceId": 2
+        }
+    ],
+    "orderId": "c92be078-3678-4c8a-87b6-ef08a15b03e3",
+    "orderUpdateId": 0,
+    "serialNumber": "9190",
+    "timestamp": "2026-01-23T09:59:31Z",
+    "version": "2.0.0",
+    "zoneSetId": ""
+}

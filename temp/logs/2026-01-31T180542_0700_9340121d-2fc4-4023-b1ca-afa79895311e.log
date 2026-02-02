@@ -1,0 +1,226 @@
+{
+  "sent_message": {
+    "edges": [
+      {
+        "edgeDescription": "edge",
+        "edgeId": "1",
+        "startNodeId": "1",
+        "endNodeId": "node3",
+        "maxSpeed": 0.1,
+        "orientation": 3.141592653589793,
+        "released": true,
+        "rotationAllowed": true,
+        "sequenceId": 1
+      }
+    ],
+    "headerId": 1769857528589,
+    "manufacturer": "hikrobotics",
+    "nodes": [
+      {
+        "nodeDescription": "",
+        "nodeId": "1",
+        "nodePosition": {
+          "allowedDeviationTheta": 6.28,
+          "allowedDeviationXy": 0.7,
+          "mapDescription": "default",
+          "x": 50.825,
+          "y": 23.198,
+          "theta": -1.568841558032663,
+          "mapId": "XX"
+        },
+        "released": true,
+        "sequenceId": 0,
+        "actions": [
+          {
+            "actionType": "detectObject",
+            "actionId": "detect-ecf651",
+            "actionDescription": "",
+            "blockingType": "HARD",
+            "actionParameters": [
+              {
+                "key": "objectType",
+                "value": "pallet"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "nodeDescription": "",
+        "nodeId": "node3",
+        "nodePosition": {
+          "allowedDeviationTheta": 6.28,
+          "allowedDeviationXy": 0.7,
+          "mapDescription": "default",
+          "mapId": "XX",
+          "x": 50.822849755730935,
+          "y": 24.297997898384168,
+          "theta": -1.568841558032663
+        },
+        "released": true,
+        "sequenceId": 2,
+        "actions": [
+          {
+            "actionType": "pick",
+            "actionId": "pick-2cf044",
+            "actionDescription": "",
+            "blockingType": "HARD",
+            "actionParameters": [
+              {
+                "key": "loadId",
+                "value": "0"
+              },
+              {
+                "key": "stationType",
+                "value": "floor"
+              },
+              {
+                "key": "loadType",
+                "value": "8"
+              },
+              {
+                "key": "height",
+                "value": 0.135
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "orderId": "9340121d-2fc4-4023-b1ca-afa79895311e",
+    "orderUpdateId": 0,
+    "serialNumber": "9190",
+    "timeStamp": "2026-01-31T18:05:28+0700",
+    "version": "2.0.0",
+    "zoneSetId": "XX",
+    "timestamp": "2026-01-31T18:05:28+0700"
+  },
+  "robot_state_later": {
+    "headerId": 274,
+    "timestamp": "2026-01-31T18:05:32Z",
+    "version": "2.0.0",
+    "manufacturer": "Robot",
+    "serialNumber": "9190",
+    "orderId": "9340121d-2fc4-4023-b1ca-afa79895311e",
+    "orderUpdateId": 0,
+    "lastNodeId": "ee4d1e53-d05d-4402-9947-69508f788393",
+    "lastNodeSequenceId": 2,
+    "zoneSetId": "XX",
+    "driving": false,
+    "paused": false,
+    "newBaseRequest": true,
+    "operatingMode": "AUTOMATIC",
+    "energyMode": "NORMAL",
+    "agvState": "",
+    "agvStateCode": 130,
+    "nodeStates": [
+      {
+        "nodeId": "1",
+        "sequenceId": 0,
+        "nodeDescription": "",
+        "nodePosition": {
+          "x": 50.825,
+          "y": 23.198,
+          "mapId": "XX",
+          "mapDescription": "default",
+          "theta": -1.568841558032663
+        },
+        "released": true
+      },
+      {
+        "nodeId": "node3",
+        "sequenceId": 2,
+        "nodeDescription": "",
+        "nodePosition": {
+          "x": 50.822849755730935,
+          "y": 24.297997898384168,
+          "mapId": "XX",
+          "mapDescription": "default",
+          "theta": -1.568841558032663
+        },
+        "released": true
+      }
+    ],
+    "edgeStates": [],
+    "actionStates": [
+      {
+        "actionId": "detect-ecf651",
+        "actionDescription": "",
+        "actionType": "detectObject",
+        "actionStatus": "WAITING",
+        "resultDescription": ""
+      },
+      {
+        "actionId": "pick-2cf044",
+        "actionDescription": "",
+        "actionType": "pick",
+        "actionStatus": "WAITING",
+        "resultDescription": ""
+      }
+    ],
+    "errors": [
+      {
+        "errorType": "Platform Command Error",
+        "errorLevel": "WARNING",
+        "errorReferences": [
+          {
+            "referenceKey": "main_code",
+            "referenceValue": "1"
+          },
+          {
+            "referenceKey": "sub_code",
+            "referenceValue": "13"
+          },
+          {
+            "referenceKey": "grade",
+            "referenceValue": "2"
+          },
+          {
+            "referenceKey": "solution",
+            "referenceValue": "\"Check platform command configuration"
+          }
+        ],
+        "errorDescription": "\"Path planning error for retrieval: non-empty height"
+      }
+    ],
+    "agvPosition": {
+      "x": 50.829,
+      "y": 23.197,
+      "theta": -1.569155717298022,
+      "mapId": "XX",
+      "positionInitialized": true,
+      "localizationScore": 0.818
+    },
+    "velocity": {
+      "vx": 0,
+      "vy": 0,
+      "omega": 0
+    },
+    "loads": [],
+    "batteryState": {
+      "batteryCharge": 40,
+      "charging": false,
+      "batteryVoltage": 52.26
+    },
+    "safetyState": {
+      "eStop": "NONE",
+      "fieldViolation": false
+    },
+    "forkState": {
+      "liftHeight": 0.27
+    },
+    "information": [
+      {
+        "infoType": "networkInfo",
+        "infoLevel": "INFO",
+        "infoDescription": "network info",
+        "infoReferences": [
+          {
+            "referenceKey": "wirelessIp",
+            "referenceValue": "172.16.0.91"
+          }
+        ]
+      }
+    ]
+  }
+}

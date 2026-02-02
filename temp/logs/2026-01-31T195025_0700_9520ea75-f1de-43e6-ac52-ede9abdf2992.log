@@ -1,0 +1,213 @@
+{
+  "sent_message": {
+    "edges": [
+      {
+        "edgeDescription": "edge",
+        "edgeId": "1",
+        "startNodeId": "1",
+        "endNodeId": "node3",
+        "maxSpeed": 0.1,
+        "orientation": 3.141592653589793,
+        "released": true,
+        "rotationAllowed": true,
+        "sequenceId": 1
+      }
+    ],
+    "headerId": 1769863754101,
+    "manufacturer": "hikrobotics",
+    "nodes": [
+      {
+        "nodeDescription": "",
+        "nodeId": "1",
+        "nodePosition": {
+          "allowedDeviationTheta": 6.28,
+          "allowedDeviationXy": 0.7,
+          "mapDescription": "default",
+          "x": 50.7,
+          "y": 23.152,
+          "theta": -1.5395200265991582,
+          "mapId": "XX"
+        },
+        "released": true,
+        "sequenceId": 0,
+        "actions": [
+          {
+            "actionType": "detectObject",
+            "actionId": "detect-8e06fc",
+            "actionDescription": "",
+            "blockingType": "HARD",
+            "actionParameters": [
+              {
+                "key": "objectType",
+                "value": "pallet"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "nodeDescription": "",
+        "nodeId": "node3",
+        "nodePosition": {
+          "allowedDeviationTheta": 6.28,
+          "allowedDeviationXy": 0.7,
+          "mapDescription": "default",
+          "mapId": "XX",
+          "x": 50.64996607787295,
+          "y": 24.751217498227362,
+          "theta": -1.5395200265991582
+        },
+        "released": true,
+        "sequenceId": 2,
+        "actions": [
+          {
+            "actionType": "pick",
+            "actionId": "pick-0fb410",
+            "actionDescription": "",
+            "blockingType": "HARD",
+            "actionParameters": [
+              {
+                "key": "loadId",
+                "value": "0"
+              },
+              {
+                "key": "stationType",
+                "value": "floor"
+              },
+              {
+                "key": "loadType",
+                "value": "8"
+              },
+              {
+                "key": "height",
+                "value": 0.135
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "orderId": "9520ea75-f1de-43e6-ac52-ede9abdf2992",
+    "orderUpdateId": 0,
+    "serialNumber": "9190",
+    "timeStamp": "2026-01-31T19:49:14+0700",
+    "version": "2.0.0",
+    "zoneSetId": "XX",
+    "timestamp": "2026-01-31T19:49:14+0700"
+  },
+  "robot_state_later": {
+    "headerId": 1104,
+    "timestamp": "2026-01-31T19:50:15Z",
+    "version": "2.0.0",
+    "manufacturer": "Robot",
+    "serialNumber": "9190",
+    "orderId": "9520ea75-f1de-43e6-ac52-ede9abdf2992",
+    "orderUpdateId": 0,
+    "lastNodeId": "1",
+    "lastNodeSequenceId": 0,
+    "zoneSetId": "XX",
+    "driving": false,
+    "paused": false,
+    "newBaseRequest": true,
+    "operatingMode": "AUTOMATIC",
+    "energyMode": "NORMAL",
+    "agvState": "",
+    "agvStateCode": 130,
+    "nodeStates": [
+      {
+        "nodeId": "node3",
+        "sequenceId": 2,
+        "nodeDescription": "",
+        "nodePosition": {
+          "x": 50.64996607787295,
+          "y": 24.751217498227362,
+          "mapId": "XX",
+          "mapDescription": "default",
+          "theta": -1.5395200265991582
+        },
+        "released": true
+      }
+    ],
+    "edgeStates": [],
+    "actionStates": [
+      {
+        "actionId": "detect-8e06fc",
+        "actionDescription": "",
+        "actionType": "detectObject",
+        "actionStatus": "FINISHED",
+        "resultDescription": ""
+      },
+      {
+        "actionId": "pick-0fb410",
+        "actionDescription": "",
+        "actionType": "pick",
+        "actionStatus": "WAITING",
+        "resultDescription": ""
+      }
+    ],
+    "errors": [
+      {
+        "errorType": "Awaiting Manual Recovery",
+        "errorLevel": "FATAL",
+        "errorReferences": [
+          {
+            "referenceKey": "main_code",
+            "referenceValue": "2"
+          },
+          {
+            "referenceKey": "sub_code",
+            "referenceValue": "41"
+          },
+          {
+            "referenceKey": "grade",
+            "referenceValue": "3"
+          },
+          {
+            "referenceKey": "solution",
+            "referenceValue": ""
+          }
+        ],
+        "errorDescription": "Space Failure and Prohibited"
+      }
+    ],
+    "agvPosition": {
+      "x": 50.701,
+      "y": 23.155,
+      "theta": -1.539362946966479,
+      "mapId": "XX",
+      "positionInitialized": true,
+      "localizationScore": 0.81
+    },
+    "velocity": {
+      "vx": 0,
+      "vy": 0,
+      "omega": 0
+    },
+    "loads": [],
+    "batteryState": {
+      "batteryCharge": 32,
+      "charging": false,
+      "batteryVoltage": 52.11
+    },
+    "safetyState": {
+      "eStop": "NONE",
+      "fieldViolation": false
+    },
+    "forkState": {
+      "liftHeight": 0.175
+    },
+    "information": [
+      {
+        "infoType": "networkInfo",
+        "infoLevel": "INFO",
+        "infoDescription": "network info",
+        "infoReferences": [
+          {
+            "referenceKey": "wirelessIp",
+            "referenceValue": "172.16.0.91"
+          }
+        ]
+      }
+    ]
+  }
+}

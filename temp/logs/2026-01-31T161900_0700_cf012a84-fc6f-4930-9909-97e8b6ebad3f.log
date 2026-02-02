@@ -1,0 +1,192 @@
+{
+  "sent_message": {
+    "edges": [
+      {
+        "edgeDescription": "edge",
+        "edgeId": "1",
+        "startNodeId": "1",
+        "endNodeId": "node3",
+        "maxSpeed": 0.1,
+        "orientation": 3.141592653589793,
+        "released": true,
+        "rotationAllowed": true,
+        "sequenceId": 1
+      }
+    ],
+    "headerId": 1769850936679,
+    "manufacturer": "hikrobotics",
+    "nodes": [
+      {
+        "nodeDescription": "",
+        "nodeId": "1",
+        "nodePosition": {
+          "allowedDeviationTheta": 6.28,
+          "allowedDeviationXy": 0.7,
+          "mapDescription": "default",
+          "x": 51.002,
+          "y": 23.401,
+          "theta": -1.5539713528056713,
+          "mapId": "XX"
+        },
+        "released": true,
+        "sequenceId": 0,
+        "actions": [
+          {
+            "actionType": "detectObject",
+            "actionId": "detect-e041bd",
+            "actionDescription": "",
+            "blockingType": "HARD",
+            "actionParameters": [
+              {
+                "key": "objectType",
+                "value": "pallet"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "nodeDescription": "",
+        "nodeId": "node3",
+        "nodePosition": {
+          "allowedDeviationTheta": 6.28,
+          "allowedDeviationXy": 0.7,
+          "mapDescription": "default",
+          "mapId": "XX",
+          "x": 50.977604938711615,
+          "y": 24.85079477202283,
+          "theta": -1.5539713528056713
+        },
+        "released": true,
+        "sequenceId": 2,
+        "actions": [
+          {
+            "actionType": "pick",
+            "actionId": "pick-72b0ce",
+            "actionDescription": "",
+            "blockingType": "HARD",
+            "actionParameters": [
+              {
+                "key": "loadId",
+                "value": "0"
+              },
+              {
+                "key": "stationType",
+                "value": "floor"
+              },
+              {
+                "key": "loadType",
+                "value": "8"
+              },
+              {
+                "key": "height",
+                "value": 0.135
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "orderId": "cf012a84-fc6f-4930-9909-97e8b6ebad3f",
+    "orderUpdateId": 0,
+    "serialNumber": "9190",
+    "timeStamp": "2026-01-31T16:15:36+0700",
+    "version": "2.0.0",
+    "zoneSetId": "XX",
+    "timestamp": "2026-01-31T16:15:36+0700"
+  },
+  "robot_state_later": {
+    "headerId": 842,
+    "timestamp": "2026-01-31T16:18:50Z",
+    "version": "2.0.0",
+    "manufacturer": "Robot",
+    "serialNumber": "9190",
+    "orderId": "cf012a84-fc6f-4930-9909-97e8b6ebad3f",
+    "orderUpdateId": 0,
+    "lastNodeId": "node3",
+    "lastNodeSequenceId": 2,
+    "zoneSetId": "XX",
+    "driving": false,
+    "paused": false,
+    "newBaseRequest": false,
+    "operatingMode": "AUTOMATIC",
+    "energyMode": "NORMAL",
+    "agvState": "",
+    "agvStateCode": 1,
+    "nodeStates": [],
+    "edgeStates": [],
+    "actionStates": [
+      {
+        "actionId": "detect-e041bd",
+        "actionDescription": "",
+        "actionType": "detectObject",
+        "actionStatus": "FINISHED",
+        "resultDescription": ""
+      },
+      {
+        "actionId": "pick-72b0ce",
+        "actionDescription": "",
+        "actionType": "pick",
+        "actionStatus": "FINISHED",
+        "resultDescription": ""
+      }
+    ],
+    "errors": [],
+    "agvPosition": {
+      "x": 50.981,
+      "y": 25.228,
+      "theta": -1.5611621093238879,
+      "mapId": "XX",
+      "positionInitialized": true,
+      "localizationScore": 0.822
+    },
+    "velocity": {
+      "vx": 0,
+      "vy": 0,
+      "omega": 0
+    },
+    "loads": [
+      {
+        "loadId": "0",
+        "loadType": "0",
+        "loadPosition": "",
+        "boundingBoxReference": {
+          "x": 0.489,
+          "y": 0,
+          "z": 0,
+          "theta": 0
+        },
+        "loadDimensions": {
+          "length": 1.15,
+          "width": 1.15,
+          "height": 0.05
+        }
+      }
+    ],
+    "batteryState": {
+      "batteryCharge": 48,
+      "charging": false,
+      "batteryVoltage": 52.29
+    },
+    "safetyState": {
+      "eStop": "NONE",
+      "fieldViolation": false
+    },
+    "forkState": {
+      "liftHeight": 0.27
+    },
+    "information": [
+      {
+        "infoType": "networkInfo",
+        "infoLevel": "INFO",
+        "infoDescription": "network info",
+        "infoReferences": [
+          {
+            "referenceKey": "wirelessIp",
+            "referenceValue": "172.16.0.91"
+          }
+        ]
+      }
+    ]
+  }
+}

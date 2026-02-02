@@ -1,0 +1,370 @@
+{
+  "sent_message": {
+    "edges": [
+      {
+        "edgeDescription": "edge",
+        "edgeId": "1",
+        "startNodeId": "1",
+        "endNodeId": "node3",
+        "maxSpeed": 0.1,
+        "orientation": 1.568527398767304,
+        "released": true,
+        "rotationAllowed": true,
+        "sequenceId": 1
+      }
+    ],
+    "headerId": 1769833031396,
+    "manufacturer": "hikrobotics",
+    "nodes": [
+      {
+        "nodeDescription": "",
+        "nodeId": "1",
+        "nodePosition": {
+          "allowedDeviationTheta": 6.28,
+          "allowedDeviationXy": 0.7,
+          "mapDescription": "default",
+          "mapId": "XX",
+          "x": 47.547,
+          "y": 25.463,
+          "theta": -1.573065254822489
+        },
+        "released": true,
+        "sequenceId": 0,
+        "actions": [
+          {
+            "actionType": "detectObject",
+            "actionId": "detect-8efca8",
+            "actionDescription": "",
+            "blockingType": "HARD",
+            "actionParameters": [
+              {
+                "key": "objectType",
+                "value": "pallet"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "nodeDescription": "",
+        "nodeId": "node3",
+        "nodePosition": {
+          "allowedDeviationTheta": 6.28,
+          "allowedDeviationXy": 0.7,
+          "mapDescription": "default",
+          "mapId": "XX",
+          "x": 47.550176496513174,
+          "y": 26.862996396377472,
+          "theta": -1.573065254822489
+        },
+        "released": true,
+        "sequenceId": 2,
+        "actions": [
+          {
+            "actionType": "pick",
+            "actionId": "pick-b9e03b",
+            "actionDescription": "",
+            "blockingType": "HARD",
+            "actionParameters": [
+              {
+                "key": "loadId",
+                "value": "0"
+              },
+              {
+                "key": "stationType",
+                "value": "floor"
+              },
+              {
+                "key": "loadType",
+                "value": "0"
+              },
+              {
+                "key": "height",
+                "value": 0.135
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "orderId": "e6a7ca2e-a136-45d7-b334-17da6089ecb5",
+    "orderUpdateId": 0,
+    "serialNumber": "9190",
+    "timeStamp": "2026-01-31T11:17:11+0700",
+    "version": "2.0.0",
+    "zoneSetId": "XX",
+    "timestamp": "2026-01-31T11:17:11+0700"
+  },
+  "robot_state_after_0s": {
+    "headerId": 1746,
+    "timestamp": "2026-01-31T11:17:01Z",
+    "version": "2.0.0",
+    "manufacturer": "Robot",
+    "serialNumber": "9190",
+    "orderId": "efe00180-9bc9-4d4f-9927-a7f321eef184",
+    "orderUpdateId": 0,
+    "lastNodeId": "af690fa5-12a7-4e00-bfb9-b8f66e5a0083",
+    "lastNodeSequenceId": 0,
+    "zoneSetId": "XX",
+    "driving": false,
+    "paused": false,
+    "newBaseRequest": false,
+    "operatingMode": "AUTOMATIC",
+    "energyMode": "NORMAL",
+    "agvState": "",
+    "agvStateCode": 897,
+    "nodeStates": [],
+    "edgeStates": [],
+    "actionStates": [
+      {
+        "actionId": "detect--004",
+        "actionDescription": "",
+        "actionType": "detectObject",
+        "actionStatus": "FAILED",
+        "resultDescription": ""
+      },
+      {
+        "actionId": "pick-004",
+        "actionDescription": "",
+        "actionType": "pick",
+        "actionStatus": "FAILED",
+        "resultDescription": ""
+      },
+      {
+        "actionId": "40c1b9e3-a9b4-4b1d-b025-4b1f4f4c3c1a",
+        "actionDescription": "cancel order",
+        "actionType": "cancelOrder",
+        "actionStatus": "FINISHED",
+        "resultDescription": ""
+      },
+      {
+        "actionId": "400bd2da-854d-4531-9448-e0b90a1f1f7f",
+        "actionDescription": "cancel order",
+        "actionType": "cancelOrder",
+        "actionStatus": "FAILED",
+        "resultDescription": ""
+      },
+      {
+        "actionId": "e4f45421-10fb-4afc-8cad-c070e3bda07e",
+        "actionDescription": "cancel order",
+        "actionType": "cancelOrder",
+        "actionStatus": "FAILED",
+        "resultDescription": ""
+      },
+      {
+        "actionId": "1615203c-56bc-4045-87e9-23964500ae6d",
+        "actionDescription": "cancel order",
+        "actionType": "cancelOrder",
+        "actionStatus": "FAILED",
+        "resultDescription": ""
+      },
+      {
+        "actionId": "875c25e3-3a6b-44bc-b791-d27df813d98f",
+        "actionDescription": "cancel order",
+        "actionType": "cancelOrder",
+        "actionStatus": "FAILED",
+        "resultDescription": ""
+      },
+      {
+        "actionId": "c69cfa41-413b-4ae7-bfaf-7e83aa23b645",
+        "actionDescription": "cancel order",
+        "actionType": "cancelOrder",
+        "actionStatus": "FAILED",
+        "resultDescription": ""
+      },
+      {
+        "actionId": "5fb91032-b230-475e-914e-2e8762553158",
+        "actionDescription": "cancel order",
+        "actionType": "cancelOrder",
+        "actionStatus": "FAILED",
+        "resultDescription": ""
+      },
+      {
+        "actionId": "8984573a-37b1-422b-92be-49461d3ff29f",
+        "actionDescription": "cancel order",
+        "actionType": "cancelOrder",
+        "actionStatus": "FAILED",
+        "resultDescription": ""
+      },
+      {
+        "actionId": "189f6014-2ab9-4855-875d-e877e2e17c74",
+        "actionDescription": "cancel order",
+        "actionType": "cancelOrder",
+        "actionStatus": "FAILED",
+        "resultDescription": ""
+      },
+      {
+        "actionId": "1f59dcf5-ab4c-4c07-9fe8-9bfb08d96254",
+        "actionDescription": "cancel order",
+        "actionType": "cancelOrder",
+        "actionStatus": "FINISHED",
+        "resultDescription": ""
+      },
+      {
+        "actionId": "c4009a2d-363b-47fd-bc07-ac751eeb8347",
+        "actionDescription": "cancel order",
+        "actionType": "cancelOrder",
+        "actionStatus": "FINISHED",
+        "resultDescription": ""
+      },
+      {
+        "actionId": "de664052-3ad7-4cbb-9419-82caf323cc5f",
+        "actionDescription": "cancel order",
+        "actionType": "cancelOrder",
+        "actionStatus": "FINISHED",
+        "resultDescription": ""
+      },
+      {
+        "actionId": "661ec807-efd6-402b-bffd-05d913e09abf",
+        "actionDescription": "cancel order",
+        "actionType": "cancelOrder",
+        "actionStatus": "FAILED",
+        "resultDescription": ""
+      },
+      {
+        "actionId": "daafb11d-1613-46bb-b7b0-dfd461a20ae6",
+        "actionDescription": "cancel order",
+        "actionType": "cancelOrder",
+        "actionStatus": "FAILED",
+        "resultDescription": ""
+      },
+      {
+        "actionId": "11e11705-be95-4a3b-aab1-011c6c71c650",
+        "actionDescription": "cancel order",
+        "actionType": "cancelOrder",
+        "actionStatus": "FAILED",
+        "resultDescription": ""
+      }
+    ],
+    "errors": [
+      {
+        "errorType": "Weak 5G and Wi-Fi Signal",
+        "errorLevel": "WARNING",
+        "errorReferences": [
+          {
+            "referenceKey": "main_code",
+            "referenceValue": "1"
+          },
+          {
+            "referenceKey": "sub_code",
+            "referenceValue": "47"
+          },
+          {
+            "referenceKey": "grade",
+            "referenceValue": "2"
+          },
+          {
+            "referenceKey": "solution",
+            "referenceValue": "\"Manual maintenance"
+          }
+        ],
+        "errorDescription": "Weak 5G signal or WIFI. A risk of platform disconnection."
+      },
+      {
+        "errorType": "VDA task update failed",
+        "errorLevel": "WARNING",
+        "errorReferences": [
+          {
+            "referenceKey": "main_code",
+            "referenceValue": "1"
+          },
+          {
+            "referenceKey": "sub_code",
+            "referenceValue": "87"
+          },
+          {
+            "referenceKey": "grade",
+            "referenceValue": "2"
+          },
+          {
+            "referenceKey": "solution",
+            "referenceValue": "取消任务，保证储位节点的deviation_xy大于车端移动精度+取放货偏移，重新下发任务，如无法恢复"
+          }
+        ],
+        "errorDescription": "储位偏差值校验失败，允许偏差小于车端要求取放货精度  最小允许偏差( 0.789)，当前任务偏差( 0"
+      },
+      {
+        "errorType": "noRouteError",
+        "errorLevel": "WARNING",
+        "errorReferences": [
+          {
+            "referenceKey": "nodeId",
+            "referenceValue": "node3"
+          },
+          {
+            "referenceKey": "sequenceId",
+            "referenceValue": "2"
+          },
+          {
+            "referenceKey": "released",
+            "referenceValue": "1"
+          },
+          {
+            "referenceKey": "nodePosition.x",
+            "referenceValue": "48.947000"
+          },
+          {
+            "referenceKey": "nodePosition.y",
+            "referenceValue": "25.463000"
+          },
+          {
+            "referenceKey": "nodePosition.theta",
+            "referenceValue": "-1.573065"
+          },
+          {
+            "referenceKey": "nodePosition.mapId",
+            "referenceValue": "XX"
+          },
+          {
+            "referenceKey": "nodePosition.deviationXY",
+            "referenceValue": "0.700000"
+          },
+          {
+            "referenceKey": "nodePosition.deviationTheta",
+            "referenceValue": "6.280000"
+          }
+        ],
+        "errorDescription": "储位偏差值校验失败，允许偏差小于车端要求取放货精度  最小允许偏差( 0.789)，当前任务偏差( 0"
+      }
+    ],
+    "agvPosition": {
+      "x": 47.547,
+      "y": 25.463,
+      "theta": -1.573065254822489,
+      "mapId": "XX",
+      "positionInitialized": true,
+      "localizationScore": 0.817
+    },
+    "velocity": {
+      "vx": 0,
+      "vy": 0,
+      "omega": 0
+    },
+    "loads": [],
+    "batteryState": {
+      "batteryCharge": 71,
+      "charging": false,
+      "batteryVoltage": 52.93
+    },
+    "safetyState": {
+      "eStop": "NONE",
+      "fieldViolation": false
+    },
+    "forkState": {
+      "liftHeight": 0.175
+    },
+    "information": [
+      {
+        "infoType": "networkInfo",
+        "infoLevel": "INFO",
+        "infoDescription": "network info",
+        "infoReferences": [
+          {
+            "referenceKey": "wirelessIp",
+            "referenceValue": "172.16.0.91"
+          }
+        ]
+      }
+    ]
+  }
+}
