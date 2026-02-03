@@ -166,8 +166,8 @@ class RobotDashboard(ttk.Window):
 
         self.btn_front.grid(row=0, column=1, padx=5, pady=5, ipadx=10, ipady=10)
         self.btn_left.grid(row=1, column=0, padx=5, pady=5, ipadx=10, ipady=10)
-        self.btn_back.grid(row=1, column=1, padx=5, pady=5, ipadx=10, ipady=10)
         self.btn_right.grid(row=1, column=2, padx=5, pady=5, ipadx=10, ipady=10)
+        self.btn_back.grid(row=2, column=1, padx=5, pady=5, ipadx=10, ipady=10)
 
         ttk.Label(move_frame, text="Arrows", font=("Arial", 8), foreground="gray").pack(side="bottom", pady=5)
 
@@ -475,32 +475,32 @@ class RobotDashboard(ttk.Window):
     def move_front(self):
         d = self._get_move_val()
         self._log_line(f"Move front: {d} m")
-        mc.manualMove_front(d)
+        mc.manualMove(d, mc.MOVE_FORWARD)
 
     def move_back(self):
         d = self._get_move_val()
         self._log_line(f"Move back: {d} m")
-        mc.manualMove_back(d)
+        mc.manualMove(d, mc.MOVE_BACKWARD)
 
     def move_left(self):
         d = self._get_move_val()
         self._log_line(f"Move left: {d} m")
-        mc.manualMove_left(d)
+        mc.manualMove(d, mc.MOVE_LEFT)
 
     def move_right(self):
         d = self._get_move_val()
         self._log_line(f"Move right: {d} m")
-        mc.manualMove_right(d)
+        mc.manualMove(d, mc.MOVE_RIGHT)
 
     def rotate_cw(self):
         a = self._get_rot_val()
         self._log_line(f"Rotate CW: {a} deg")
-        mc.manualRotate_clockwise(a)
+        mc.manualRotate(a, mc.ROTATE_CLOCKWISE)
 
     def rotate_ccw(self):
         a = self._get_rot_val()
         self._log_line(f"Rotate CCW: {a} deg")
-        mc.manualRotate_counterclockwise(a)
+        mc.manualRotate(a, mc.ROTATE_COUNTERCLOCKWISE)
 
     def on_close(self):
         try:

@@ -166,8 +166,8 @@ class RobotDashboard(ttk.Window):
 
         self.btn_front.grid(row=0, column=1, padx=5, pady=5, ipadx=10, ipady=10)
         self.btn_left.grid(row=1, column=0, padx=5, pady=5, ipadx=10, ipady=10)
-        self.btn_back.grid(row=1, column=1, padx=5, pady=5, ipadx=10, ipady=10)
         self.btn_right.grid(row=1, column=2, padx=5, pady=5, ipadx=10, ipady=10)
+        self.btn_back.grid(row=2, column=1, padx=5, pady=5, ipadx=10, ipady=10)
 
         ttk.Label(move_frame, text="Arrows", font=("Arial", 8), foreground="gray").pack(side="bottom", pady=5)
 
@@ -512,4 +512,5 @@ class RobotDashboard(ttk.Window):
 if __name__ == "__main__":
     app = RobotDashboard()
     app.place_window_center()
+
     app.mainloop()

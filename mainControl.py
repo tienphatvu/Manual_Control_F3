@@ -33,14 +33,18 @@ MAX_SPEED = 0.5
 DEFAULT_MAP_DESCRIPTION = "default"
 DEFAULT_MAP_ID = "XX"
 
-ALLOWED_DEVIATION_XY = 0.2
+ALLOWED_DEVIATION_XY = 0.1
 ALLOWED_DEVIATION_THETA = math.pi
-ROTATE_ALLOWED_DEVIATION_THETA = 0.5
+ROTATE_ALLOWED_DEVIATION_THETA = 0.1
 ARRIVAL_POLL_INTERVAL_S = 0.2
 ARRIVAL_TIMEOUT_S = 60.0
 ROTATE_SELF = "ROTATE_SELF"
 ROTATE_CLOCKWISE = "ROTATE_CLOCKWISE"
 ROTATE_COUNTERCLOCKWISE = "ROTATE_COUNTERCLOCKWISE"
+MOVE_FORWARD = "MOVE_FORWARD"
+MOVE_BACKWARD = "MOVE_BACKWARD"
+MOVE_LEFT = "MOVE_LEFT"
+MOVE_RIGHT = "MOVE_RIGHT"
 
 @dataclass
 class Pose:
@@ -429,36 +433,71 @@ def _send_robot_rotate(delta_theta: float, rotate_direction: str):
         theta_tol=ROTATE_ALLOWED_DEVIATION_THETA,
         timeout_s=ARRIVAL_TIMEOUT_S,
     )
+def manualMove(distance: float, direction: str):
+    """
+    distance: meters
+    direction: MOVE_FORWARD / MOVE_BACKWARD / MOVE_LEFT / MOVE_RIGHT
+    """
+    if distance < 0.15:
+        raise ValueError("distance must be >= 0.15 meters")
 
+    if direction == MOVE_FORWARD:
+        _send_robot_distance(forward=distance, left=0.0)
+    elif direction == MOVE_BACKWARD:
+        _send_robot_distance(forward=-distance, left=0.0)
+    elif direction == MOVE_LEFT:
+        _send_robot_distance(forward=0.0, left=distance)
+    elif direction == MOVE_RIGHT:
+        _send_robot_distance(forward=0.0, left=-distance)
+    else:
+        raise ValueError(f"Unknown move direction: {direction}")
 
-def manualMove_front(distance: float):
-    _send_robot_distance(forward=distance, left=0.0)
+def manualRotate(angle_deg: float, direction: str):
+    """
+    angle_deg: degrees (>= 10)
+    direction: ROTATE_CLOCKWISE / ROTATE_COUNTERCLOCKWISE
+    """
+    if angle_deg < 10.0:
+        raise ValueError("Angle must be >= 10 degrees")
 
-def manualMove_back(distance: float):
-    _send_robot_distance(forward=-distance, left=0.0)
+    angle_rad = math.radians(angle_deg)
 
-def manualMove_left(distance: float):
-    _send_robot_distance(forward=0.0, left=distance)
+    if direction == ROTATE_CLOCKWISE:
+        delta = -abs(angle_rad)
+    elif direction == ROTATE_COUNTERCLOCKWISE:
+        delta = abs(angle_rad)
+    else:
+        raise ValueError(f"Unknown rotate direction: {direction}")
 
-def manualMove_right(distance: float):
-    _send_robot_distance(forward=0.0, left=-distance)
+    _send_robot_rotate(delta_theta=delta, rotate_direction=direction)
 
+# def manualMove_front(distance: float):
+#     _send_robot_distance(forward=distance, left=0.0)
 
-def manualRotate_clockwise(angle: float):
-    if angle >= 4.0:
-        angle_rad = angle * math.pi / 180.0
-        print(f"Angle_rad: ", angle_rad)
-        _send_robot_rotate(delta_theta=-abs(angle_rad), rotate_direction=ROTATE_CLOCKWISE)
-    else :
-        print("Angle must be greater than or equal to 4 degrees for clockwise rotation.")
-def manualRotate_counterclockwise(angle: float):
-    if angle >= 4.0:    
-        angle_rad = angle * math.pi / 180.0
-        print(f"Angle_rad: ", angle_rad)
-        _send_robot_rotate(delta_theta=abs(angle_rad), rotate_direction=ROTATE_COUNTERCLOCKWISE)
+# def manualMove_back(distance: float):
+#     _send_robot_distance(forward=-distance, left=0.0)
 
-    else: 
-        print("Angle must be greater than or equal to 4 degrees for counterclockwise rotation.")
+# def manualMove_left(distance: float):
+#     _send_robot_distance(forward=0.0, left=distance)
+
+# def manualMove_right(distance: float):
+#     _send_robot_distance(forward=0.0, left=-distance)
+
+# def manualRotate_clockwise(angle: float):
+#     if angle >= 4.0:
+#         angle_rad = angle * math.pi / 180.0
+#         print(f"Angle_rad: ", angle_rad)
+#         _send_robot_rotate(delta_theta=-abs(angle_rad), rotate_direction=ROTATE_CLOCKWISE)
+#     else :
+#         print("Angle must be greater than or equal to 4 degrees for clockwise rotation.")
+# def manualRotate_counterclockwise(angle: float):
+#     if angle >= 4.0:    
+#         angle_rad = angle * math.pi / 180.0
+#         print(f"Angle_rad: ", angle_rad)
+#         _send_robot_rotate(delta_theta=abs(angle_rad), rotate_direction=ROTATE_COUNTERCLOCKWISE)
+
+#     else: 
+#         print("Angle must be greater than or equal to 4 degrees for counterclockwise rotation.")
 
 if __name__ == "__main__":
     try:
@@ -477,17 +516,17 @@ if __name__ == "__main__":
         cmd = input("Input command (front/back/left/right/cw/ccw): ").strip().lower()
 
         if cmd == "front":
-            manualMove_front(val)
+            manualMove(val, MOVE_FORWARD)
         elif cmd == "back":
-            manualMove_back(val)
+            manualMove(val, MOVE_BACKWARD)
         elif cmd == "left":
-            manualMove_left(val)
+            manualMove(val, MOVE_LEFT)
         elif cmd == "right":
-            manualMove_right(val)
+            manualMove(val, MOVE_RIGHT)
         elif cmd == "cw":
-            manualRotate_clockwise(val)
+            manualRotate(val, ROTATE_CLOCKWISE)
         elif cmd == "ccw":
-            manualRotate_counterclockwise(val)
+            manualRotate(val, ROTATE_COUNTERCLOCKWISE)
         else:
             print("Command not valid")
 

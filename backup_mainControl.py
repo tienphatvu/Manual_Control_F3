@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 
 from __future__ import annotations
-
 import json
 import math
 import time
@@ -10,38 +9,38 @@ import uuid
 from dataclasses import dataclass
 from threading import Event, Lock
 from typing import Any, Dict, Optional
-
 import paho.mqtt.client as mqtt
-
 
 MQTT_BROKER = "172.16.0.103"
 MQTT_PORT = 9001
+
+ROBOT_ID = "9190"
+MANUFACTURER = "HikRobot"
 
 USE_WEBSOCKETS = True
 WS_PATH: Optional[str] = "/mqtt"
 
 MQTT_USERNAME: Optional[str] = None
 MQTT_PASSWORD: Optional[str] = None
-
-MQTT_TOPIC_ORDER = "VDA/V2.0.0/Robot/9190/order"
-MQTT_TOPIC_STATE = "VDA/V2.0.0/Robot/9190/state"
+MQTT_TOPIC_ORDER = f"VDA/V2.0.0/Robot/{ROBOT_ID}/order"
+MQTT_TOPIC_STATE = f"VDA/V2.0.0/Robot/{ROBOT_ID}/state"
+MQTT_TOPIC_INSTANTACTIONS = f"VDA/V2.0.0/Robot/{ROBOT_ID}/instantActions"
 
 MQTT_QOS = 0
 MQTT_RETAIN = False
 
 MAX_SPEED = 0.5
-
 DEFAULT_MAP_DESCRIPTION = "default"
 DEFAULT_MAP_ID = "XX"
 
-ALLOWED_DEVIATION_XY = 0.05
+ALLOWED_DEVIATION_XY = 0.2
 ALLOWED_DEVIATION_THETA = math.pi
-ROTATE_ALLOWED_DEVIATION_THETA = 0.0
-
+ROTATE_ALLOWED_DEVIATION_THETA = 0.2
+ARRIVAL_POLL_INTERVAL_S = 0.2
+ARRIVAL_TIMEOUT_S = 60.0
 ROTATE_SELF = "ROTATE_SELF"
 ROTATE_CLOCKWISE = "ROTATE_CLOCKWISE"
 ROTATE_COUNTERCLOCKWISE = "ROTATE_COUNTERCLOCKWISE"
-
 
 @dataclass
 class Pose:
@@ -50,26 +49,22 @@ class Pose:
     theta: float
     map_id: str
     map_description: str
-
-
 _pose_lock = Lock()
 _latest_pose: Optional[Pose] = None
 _pose_ready = Event()
-
+_latest_state: Optional[Dict[str, Any]] = None
+_state_ready = Event()
 _client: Optional[mqtt.Client] = None
 _current_order_id: str = str(uuid.uuid4())
 _current_update_id: int = 0
 
-
 def _utc_timestamp() -> str:
     return time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
-
 
 def reset_order_session():
     global _current_order_id, _current_update_id
     _current_order_id = str(uuid.uuid4())
     _current_update_id = 0
-
 
 def _enabled_map_id(state: Dict[str, Any]) -> str:
     maps = state.get("maps", [])
@@ -78,7 +73,6 @@ def _enabled_map_id(state: Dict[str, Any]) -> str:
             if isinstance(m, dict) and m.get("mapStatus") == "ENABLED" and m.get("mapId"):
                 return str(m["mapId"])
     return DEFAULT_MAP_ID
-
 
 def _pose_from_node_states(state: Dict[str, Any]) -> Optional[Pose]:
     node_states = state.get("nodeStates", [])
@@ -116,7 +110,6 @@ def _pose_from_node_states(state: Dict[str, Any]) -> Optional[Pose]:
     except Exception:
         return None
 
-
 def _pose_from_agv_position(state: Dict[str, Any]) -> Optional[Pose]:
     ap = state.get("agvPosition", {})
     if not isinstance(ap, dict):
@@ -134,35 +127,34 @@ def _pose_from_agv_position(state: Dict[str, Any]) -> Optional[Pose]:
     except Exception:
         return None
 
-
 def _try_parse_pose_from_state(state: Dict[str, Any]) -> Optional[Pose]:
     p = _pose_from_agv_position(state)
     if p is not None:
         return p
     return _pose_from_node_states(state)
 
-
 def _on_connect(client: mqtt.Client, userdata: Any, flags: Dict[str, Any], reason_code: Any, properties: Any):
     rc = getattr(reason_code, "value", reason_code)
     if rc == 0:
         client.subscribe(MQTT_TOPIC_STATE, qos=MQTT_QOS)
 
-
 def _on_message(client: mqtt.Client, userdata: Any, msg: mqtt.MQTTMessage):
-    global _latest_pose
+    global _latest_pose, _latest_state
     if msg.topic != MQTT_TOPIC_STATE:
         return
     try:
         state = json.loads(msg.payload.decode("utf-8", errors="replace"))
     except Exception:
         return
+    with _pose_lock:
+        _latest_state = state
+        _state_ready.set()
     pose = _try_parse_pose_from_state(state)
     if pose is None:
         return
     with _pose_lock:
         _latest_pose = pose
         _pose_ready.set()
-
 
 def _ensure_client_connected() -> mqtt.Client:
     global _client
@@ -184,12 +176,10 @@ def _ensure_client_connected() -> mqtt.Client:
 
     client.on_connect = _on_connect
     client.on_message = _on_message
-
     client.connect(MQTT_BROKER, MQTT_PORT, keepalive=60)
     client.loop_start()
     _client = client
     return _client
-
 
 def disconnect():
     global _client
@@ -197,7 +187,6 @@ def disconnect():
         _client.loop_stop()
         _client.disconnect()
         _client = None
-
 
 def _get_latest_pose(timeout_s: float = 10.0) -> Pose:
     _ensure_client_connected()
@@ -208,6 +197,21 @@ def _get_latest_pose(timeout_s: float = 10.0) -> Pose:
             raise RuntimeError("Pose is None")
         return _latest_pose
 
+def _get_latest_state(timeout_s: float = 10.0) -> Dict[str, Any]:
+    _ensure_client_connected()
+    if not _state_ready.wait(timeout=timeout_s):
+        raise RuntimeError("No robot state received")
+    with _pose_lock:
+        if _latest_state is None:
+            raise RuntimeError("Robot state is None")
+        return json.loads(json.dumps(_latest_state))
+
+def _get_latest_state_nowait() -> Optional[Dict[str, Any]]:
+    _ensure_client_connected()
+    with _pose_lock:
+        if _latest_state is None:
+            return None
+        return json.loads(json.dumps(_latest_state))
 
 def _normalize_angle_rad(theta: float) -> float:
     while theta > math.pi:
@@ -216,6 +220,37 @@ def _normalize_angle_rad(theta: float) -> float:
         theta += 2.0 * math.pi
     return theta
 
+def _angle_diff_rad(a: float, b: float) -> float:
+    return _normalize_angle_rad(a - b)
+
+def _wait_until_reached(
+    target: Pose,
+    *,
+    xy_tol: float,
+    theta_tol: Optional[float],
+    timeout_s: float,
+):
+    deadline = time.time() + timeout_s
+    last_pose: Optional[Pose] = None
+    while time.time() < deadline:
+        pose = _get_latest_pose(timeout_s=2.0)
+        last_pose = pose
+        dx = pose.x - target.x
+        dy = pose.y - target.y
+        xy_ok = (dx * dx + dy * dy) <= (xy_tol * xy_tol)
+        if theta_tol is None:
+            theta_ok = True
+        else:
+            theta_ok = abs(_angle_diff_rad(pose.theta, target.theta)) <= theta_tol
+        if xy_ok and theta_ok:
+            return
+        time.sleep(ARRIVAL_POLL_INTERVAL_S)
+    if last_pose is None:
+        raise RuntimeError("Timeout waiting to reach target (no pose received)")
+    raise RuntimeError(
+        "Timeout waiting to reach target "
+        f"(last pose x={last_pose.x:.3f}, y={last_pose.y:.3f}, theta={last_pose.theta:.3f})"
+    )
 
 def _compute_target_pose_robot(pose: Pose, forward: float, left: float) -> Pose:
     ct = math.cos(pose.theta)
@@ -256,10 +291,10 @@ def _build_order_from_poses(
     cp3 = {"weight": 1.0, "x": start.x + 2.0 * dx / 3.0, "y": start.y + 2.0 * dy / 3.0}
 
     order = {
-        "headerId": 3,
-        "manufacturer": "HikRobot",
+        "headerId": int(time.time() * 1000),
+        "manufacturer": MANUFACTURER,
         "version": "2.0.0",
-        "serialNumber": "9190",
+        "serialNumber": ROBOT_ID,
         "timestamp": _utc_timestamp(),
         "zoneSetId": "",
         "orderId": _current_order_id,
@@ -321,16 +356,44 @@ def _build_order_from_poses(
     _current_update_id += 1
     return order
 
-
 def publish_order(order: Dict[str, Any]):
     client = _ensure_client_connected()
     payload = json.dumps(order, ensure_ascii=False)
     info = client.publish(MQTT_TOPIC_ORDER, payload=payload, qos=MQTT_QOS, retain=MQTT_RETAIN)
     info.wait_for_publish()
-    print("SENT", order["orderUpdateId"])
 
+def send_cancel_order():
+    client = _ensure_client_connected()
+    message = {
+        "headerId": int(time.time() * 1000),
+        "timestamp": _utc_timestamp(),
+        "version": "2.0.0",
+        "manufacturer": MANUFACTURER,
+        "serialNumber": ROBOT_ID,
+        "actions": [
+            {
+                "actionType": "cancelOrder",
+                "actionId": str(uuid.uuid4()),
+                "actionDescription": "cancel order",
+                "blockingType": "NONE",
+            }
+        ],
+    }
+    payload = json.dumps(message, ensure_ascii=False)
+    info = client.publish(
+        MQTT_TOPIC_INSTANTACTIONS,
+        payload=payload,
+        qos=MQTT_QOS,
+        retain=MQTT_RETAIN,
+    )
+    info.wait_for_publish()
+
+def stop_robot():
+    """Stop the robot by sending VDA5050 cancelOrder instant action."""
+    send_cancel_order()
 
 def _send_robot_distance(forward: float, left: float):
+    reset_order_session()
     start = _get_latest_pose(timeout_s=15.0)
     end = _compute_target_pose_robot(start, forward=forward, left=left)
     edge_orientation = math.pi if forward < 0.0 else 0.0
@@ -338,11 +401,16 @@ def _send_robot_distance(forward: float, left: float):
     print("POSE", start.x, start.y, start.theta)
     print("TARGET", end.x, end.y, end.theta)
     publish_order(_build_order_from_poses(start, end, edge_orientation, end_theta_override))
-
+    _wait_until_reached(
+        end,
+        xy_tol=ALLOWED_DEVIATION_XY,
+        theta_tol=None,
+        timeout_s=ARRIVAL_TIMEOUT_S,
+    )
 
 def _send_robot_rotate(delta_theta: float, rotate_direction: str):
+    reset_order_session()
     start = _get_latest_pose(timeout_s=15.0)
-
     end = Pose(
         x=start.x,
         y=start.y,
@@ -350,34 +418,33 @@ def _send_robot_rotate(delta_theta: float, rotate_direction: str):
         map_id=start.map_id,
         map_description=start.map_description,
     )
-
     order = _build_order_from_poses(start, end, end.theta, end.theta)
     order["nodes"][1]["rotateDirection"] = rotate_direction
     order["nodes"][1]["nodePosition"]["allowedDeviationTheta"] = ROTATE_ALLOWED_DEVIATION_THETA
     order["edges"][0]["orientation"] = end.theta
-
     publish_order(order)
+    _wait_until_reached(
+        end,
+        xy_tol=ALLOWED_DEVIATION_XY,
+        theta_tol=ROTATE_ALLOWED_DEVIATION_THETA,
+        timeout_s=ARRIVAL_TIMEOUT_S,
+    )
 
 
 def manualMove_front(distance: float):
-    reset_order_session()
     _send_robot_distance(forward=distance, left=0.0)
 
 def manualMove_back(distance: float):
-    reset_order_session()
     _send_robot_distance(forward=-distance, left=0.0)
 
 def manualMove_left(distance: float):
-    reset_order_session()
     _send_robot_distance(forward=0.0, left=distance)
 
 def manualMove_right(distance: float):
-    reset_order_session()
     _send_robot_distance(forward=0.0, left=-distance)
 
 
 def manualRotate_clockwise(angle: float):
-    reset_order_session()
     if angle >= 4.0:
         angle_rad = angle * math.pi / 180.0
         print(f"Angle_rad: ", angle_rad)
@@ -385,11 +452,11 @@ def manualRotate_clockwise(angle: float):
     else :
         print("Angle must be greater than or equal to 4 degrees for clockwise rotation.")
 def manualRotate_counterclockwise(angle: float):
-    reset_order_session()
     if angle >= 4.0:    
         angle_rad = angle * math.pi / 180.0
         print(f"Angle_rad: ", angle_rad)
         _send_robot_rotate(delta_theta=abs(angle_rad), rotate_direction=ROTATE_COUNTERCLOCKWISE)
+
     else: 
         print("Angle must be greater than or equal to 4 degrees for counterclockwise rotation.")
 
