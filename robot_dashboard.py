@@ -186,8 +186,8 @@ class RobotDashboard(ttk.Window):
         self.btn_ccw = ttk.Button(rot_btns, text="↺ CCW", command=lambda: self._run_cmd(self.rotate_ccw), bootstyle="warning", width=10)
         self.btn_cw = ttk.Button(rot_btns, text="CW ↻", command=lambda: self._run_cmd(self.rotate_cw), bootstyle="warning", width=10)
 
-        self.btn_ccw.pack(pady=5, ipadx=5, ipady=5)
-        self.btn_cw.pack(pady=5, ipadx=5, ipady=5)
+        self.btn_ccw.pack(side="left", padx=8, pady=5, ipadx=5, ipady=5)
+        self.btn_cw.pack(side="left", padx=8, pady=5, ipadx=5, ipady=5)
 
         log_group = ttk.Labelframe(main_container, text="System Log", padding=10)
         log_group.pack(fill="both", expand=True, pady=(15, 0))
