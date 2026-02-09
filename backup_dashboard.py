@@ -186,8 +186,8 @@ class RobotDashboard(ttk.Window):
         self.btn_ccw = ttk.Button(rot_btns, text="↺ CCW", command=lambda: self._run_cmd(self.rotate_ccw), bootstyle="warning", width=10)
         self.btn_cw = ttk.Button(rot_btns, text="CW ↻", command=lambda: self._run_cmd(self.rotate_cw), bootstyle="warning", width=10)
 
-        self.btn_ccw.pack(pady=5, ipadx=5, ipady=5)
-        self.btn_cw.pack(pady=5, ipadx=5, ipady=5)
+        self.btn_ccw.pack(side="left", padx=8, pady=5, ipadx=5, ipady=5)
+        self.btn_cw.pack(side="left", padx=8, pady=5, ipadx=5, ipady=5)
 
         log_group = ttk.Labelframe(main_container, text="System Log", padding=10)
         log_group.pack(fill="both", expand=True, pady=(15, 0))
@@ -475,32 +475,32 @@ class RobotDashboard(ttk.Window):
     def move_front(self):
         d = self._get_move_val()
         self._log_line(f"Move front: {d} m")
-        mc.manualMove_front(d)
+        mc.manualMove(d, mc.MOVE_FORWARD)
 
     def move_back(self):
         d = self._get_move_val()
         self._log_line(f"Move back: {d} m")
-        mc.manualMove_back(d)
+        mc.manualMove(d, mc.MOVE_BACKWARD)
 
     def move_left(self):
         d = self._get_move_val()
         self._log_line(f"Move left: {d} m")
-        mc.manualMove_left(d)
+        mc.manualMove(d, mc.MOVE_LEFT)
 
     def move_right(self):
         d = self._get_move_val()
         self._log_line(f"Move right: {d} m")
-        mc.manualMove_right(d)
+        mc.manualMove(d, mc.MOVE_RIGHT)
 
     def rotate_cw(self):
         a = self._get_rot_val()
         self._log_line(f"Rotate CW: {a} deg")
-        mc.manualRotate_clockwise(a)
+        mc.manualRotate(a, mc.ROTATE_CLOCKWISE)
 
     def rotate_ccw(self):
         a = self._get_rot_val()
         self._log_line(f"Rotate CCW: {a} deg")
-        mc.manualRotate_counterclockwise(a)
+        mc.manualRotate(a, mc.ROTATE_COUNTERCLOCKWISE)
 
     def on_close(self):
         try:

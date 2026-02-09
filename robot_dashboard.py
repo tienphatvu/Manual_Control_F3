@@ -38,6 +38,11 @@ class RobotDashboard(ttk.Window):
         self._last_pose_err_log_ts = 0.0
         self._last_error_sig = None
 
+        # Go-to coordinate inputs
+        self.goto_x = tk.StringVar(value="0.0")
+        self.goto_y = tk.StringVar(value="0.0")
+        self.goto_theta = tk.StringVar(value="")  # radians (optional)
+
         self._build_ui()
         self._bind_hotkeys()
 
@@ -138,11 +143,10 @@ class RobotDashboard(ttk.Window):
             manual_tab,
             text="🛑 EMERGENCY STOP",
             command=self.emergency_stop,
-            bootstyle="danger", 
+            bootstyle="danger",
             width=20
         )
         self.btn_stop.pack(fill="x", pady=(0, 15), ipady=5)
-        # ------------------------------
 
         ctrl_grid = ttk.Frame(manual_tab)
         ctrl_grid.pack(fill="both", expand=True)
@@ -188,6 +192,44 @@ class RobotDashboard(ttk.Window):
 
         self.btn_ccw.pack(side="left", padx=8, pady=5, ipadx=5, ipady=5)
         self.btn_cw.pack(side="left", padx=8, pady=5, ipadx=5, ipady=5)
+
+        # ------------------------------
+        # Go To Coordinate (Theta in radians)
+        goto_frame = ttk.Labelframe(manual_tab, text="📌 Go To Coordinate", padding=15, bootstyle="info")
+        goto_frame.pack(fill="x", pady=(15, 0))
+
+        row1 = ttk.Frame(goto_frame)
+        row1.pack(fill="x", pady=(0, 8))
+
+        ttk.Label(row1, text="X (m):").pack(side="left")
+        ttk.Entry(row1, textvariable=self.goto_x, width=10).pack(side="left", padx=(5, 12))
+
+        ttk.Label(row1, text="Y (m):").pack(side="left")
+        ttk.Entry(row1, textvariable=self.goto_y, width=10).pack(side="left", padx=(5, 12))
+
+        ttk.Label(row1, text="Theta (rad, optional):").pack(side="left")
+        ttk.Entry(row1, textvariable=self.goto_theta, width=12).pack(side="left", padx=(5, 0))
+
+        row2 = ttk.Frame(goto_frame)
+        row2.pack(fill="x", pady=(0, 8))
+
+        self.btn_use_pose = ttk.Button(
+            row2,
+            text="📍 Use Current Pose",
+            command=lambda: self._run_cmd(self.use_current_pose_cmd),
+            bootstyle="secondary-outline",
+            width=18
+        )
+        self.btn_use_pose.pack(side="left")
+
+        self.btn_goto = ttk.Button(
+            row2,
+            text="🚀 GO",
+            command=lambda: self._run_cmd(self.goto_coordinate_cmd),
+            bootstyle="info",
+            width=12
+        )
+        self.btn_goto.pack(side="right")
 
         log_group = ttk.Labelframe(main_container, text="System Log", padding=10)
         log_group.pack(fill="both", expand=True, pady=(15, 0))
@@ -256,7 +298,10 @@ class RobotDashboard(ttk.Window):
 
     def _set_controls_state(self, enabled: bool):
         state = "normal" if enabled else "disabled"
-        for b in [self.reset_btn, self.btn_front, self.btn_back, self.btn_left, self.btn_right, self.btn_cw, self.btn_ccw, self.btn_stop]:
+        for b in [
+            self.reset_btn, self.btn_front, self.btn_back, self.btn_left, self.btn_right,
+            self.btn_cw, self.btn_ccw, self.btn_stop, self.btn_goto, self.btn_use_pose
+        ]:
             b.config(state=state)
 
     def _log_line(self, s: str):
@@ -294,20 +339,7 @@ class RobotDashboard(ttk.Window):
             err_type = str(err.get("errorType") or "Unknown")
             level = str(err.get("errorLevel") or "UNKNOWN")
             desc = str(err.get("errorDescription") or "").strip()
-            refs = err.get("errorReferences", [])
-            ref_parts = []
-            if isinstance(refs, list):
-                for ref in refs:
-                    if isinstance(ref, dict):
-                        k = str(ref.get("referenceKey") or "").strip()
-                        v = str(ref.get("referenceValue") or "").strip()
-                        if k or v:
-                            ref_parts.append(f"{k}={v}" if k else v)
-            ref_str = f" ({', '.join(ref_parts)})" if ref_parts else ""
-            msg = f"ERROR[{level}] {err_type}"
-            if desc:
-                msg = f"{msg}: {desc}"
-            self._log_line(f"{msg}{ref_str}")
+            self._log_line(f"ERROR[{level}] {err_type}: {desc}" if desc else f"ERROR[{level}] {err_type}")
 
     def toggle_connect(self):
         if not self._connected:
@@ -360,7 +392,6 @@ class RobotDashboard(ttk.Window):
                 state = mc._get_latest_state(timeout_s=2.0)
                 pose = mc._try_parse_pose_from_state(state)
                 if pose is not None:
-                    self._last_pose_ok_ts = time.time()
                     self.after(0, lambda p=pose: self._update_pose_ui(p))
                 else:
                     self.after(0, lambda: self._set_status("WAITING_POSE", "warning"))
@@ -368,11 +399,6 @@ class RobotDashboard(ttk.Window):
                 self.after(0, lambda s=state: self._log_state_errors(s))
             except Exception:
                 self.after(0, lambda: self._set_status("WAITING_STATE", "warning"))
-
-                now = time.time()
-                if now - self._last_pose_err_log_ts >= 5.0:
-                    self._last_pose_err_log_ts = now
-                    self.after(0, lambda: self._log_line("No state received yet (waiting state topic)..."))
             time.sleep(0.25)
 
     def _update_pose_ui(self, pose):
@@ -382,7 +408,6 @@ class RobotDashboard(ttk.Window):
         self.pose_map.set(f"{pose.map_id}")
         self.pose_desc.set(f"{pose.map_description}")
         self._append_pose_log(pose)
-
         self._set_status("ONLINE", "success")
 
     def reset_session(self):
@@ -417,7 +442,10 @@ class RobotDashboard(ttk.Window):
 
     def _set_manual_controls_temporarily(self, enabled: bool):
         state = "normal" if enabled else "disabled"
-        for b in [self.reset_btn, self.btn_front, self.btn_back, self.btn_left, self.btn_right, self.btn_cw, self.btn_ccw]:
+        for b in [
+            self.reset_btn, self.btn_front, self.btn_back, self.btn_left, self.btn_right,
+            self.btn_cw, self.btn_ccw, self.btn_goto, self.btn_use_pose
+        ]:
             b.config(state=state)
 
     def _run_cmd(self, fn):
@@ -446,14 +474,13 @@ class RobotDashboard(ttk.Window):
         if not self._connected:
             return
         self._log_line("!!! EMERGENCY STOP !!!")
+
         def worker():
             try:
                 if hasattr(mc, "stop_robot"):
                     mc.stop_robot()
                 elif hasattr(mc, "send_cancel_order"):
                     mc.send_cancel_order()
-                else:
-                    mc.manualMove_front(0)
                 self.after(0, lambda: self._log_line("Stop sent."))
             except Exception as ex:
                 self.after(0, lambda: self._log_line(f"Stop error: {ex}"))
@@ -502,6 +529,39 @@ class RobotDashboard(ttk.Window):
         self._log_line(f"Rotate CCW: {a} deg")
         mc.manualRotate(a, mc.ROTATE_COUNTERCLOCKWISE)
 
+    def use_current_pose_cmd(self):
+        if not self._connected:
+            self._log_line("Not connected.")
+            return
+        pose = mc._get_latest_pose(timeout_s=2.0)
+        self.goto_x.set(f"{pose.x:.3f}")
+        self.goto_y.set(f"{pose.y:.3f}")
+        self.goto_theta.set(f"{pose.theta:.6f}")  # radians
+        self._log_line("Filled GoTo fields from current pose.")
+
+    def goto_coordinate_cmd(self):
+        try:
+            x = float(self.goto_x.get().strip())
+            y = float(self.goto_y.get().strip())
+        except Exception:
+            self._log_line("GoTo error: X/Y must be numeric.")
+            return
+
+        theta_txt = self.goto_theta.get().strip()
+        theta_rad = None
+        if theta_txt:
+            try:
+                theta_rad = float(theta_txt)
+            except Exception:
+                self._log_line("GoTo error: Theta must be numeric (rad) or empty.")
+                return
+
+        self._log_line(
+            f"GoTo: x={x:.3f}, y={y:.3f}, theta(rad)={theta_rad if theta_rad is not None else 'auto'}"
+        )
+
+        mc.goto_coordinate(x, y, theta_rad=theta_rad)
+
     def on_close(self):
         try:
             if self._connected:
@@ -509,8 +569,8 @@ class RobotDashboard(ttk.Window):
         finally:
             self.destroy()
 
+
 if __name__ == "__main__":
     app = RobotDashboard()
     app.place_window_center()
-
     app.mainloop()
