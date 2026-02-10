@@ -44,8 +44,6 @@ class RobotDashboard(ttk.Window):
         self.goto_theta = tk.StringVar(value="")  # radians (optional)
 
         self._build_ui()
-        self._bind_hotkeys()
-
         self.protocol("WM_DELETE_WINDOW", self.on_close)
 
     def _build_ui(self):
@@ -279,23 +277,7 @@ class RobotDashboard(ttk.Window):
         frame.grid(row=row, column=col, sticky="ns", padx=5)
         ttk.Label(frame, text=title, font=("Arial", 8), foreground="gray").pack()
         ttk.Label(frame, textvariable=var, font=("Consolas", 14, "bold"), bootstyle="info").pack()
-
-    def _bind_hotkeys(self):
-        self.bind("<w>", lambda e: self._run_cmd(self.move_front))
-        self.bind("<s>", lambda e: self._run_cmd(self.move_back))
-        self.bind("<a>", lambda e: self._run_cmd(self.move_left))
-        self.bind("<d>", lambda e: self._run_cmd(self.move_right))
-
-        self.bind("<q>", lambda e: self._run_cmd(self.rotate_ccw))
-        self.bind("<e>", lambda e: self._run_cmd(self.rotate_cw))
-
-        self.bind("<Up>", lambda e: self._run_cmd(self.move_front))
-        self.bind("<Down>", lambda e: self._run_cmd(self.move_back))
-        self.bind("<Left>", lambda e: self._run_cmd(self.move_left))
-        self.bind("<Right>", lambda e: self._run_cmd(self.move_right))
-
-        self.bind("<space>", lambda e: self.emergency_stop())
-
+        
     def _set_controls_state(self, enabled: bool):
         state = "normal" if enabled else "disabled"
         for b in [
