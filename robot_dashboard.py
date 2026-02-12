@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import csv
+import ast
 import json
 import math
 import os
@@ -137,14 +138,35 @@ class RobotDashboard(ttk.Window):
         manual_tab = ttk.Frame(ctl_notebook, padding=15)
         ctl_notebook.add(manual_tab, text="🎮 Manual Control")
 
+        action_row = ttk.Frame(manual_tab)
+        action_row.pack(fill="x", pady=(0, 15))
+
         self.btn_stop = ttk.Button(
-            manual_tab,
+            action_row,
             text="🛑 EMERGENCY STOP",
             command=self.emergency_stop,
             bootstyle="danger",
             width=20
         )
-        self.btn_stop.pack(fill="x", pady=(0, 15), ipady=5)
+        self.btn_stop.pack(side="left", fill="x", expand=True, ipady=5)
+
+        self.btn_drop = ttk.Button(
+            action_row,
+            text="📦 DROP",
+            command=lambda: self._run_cmd(self.drop_cmd),
+            bootstyle="info",
+            width=12,
+        )
+        self.btn_drop.pack(side="left", padx=(10, 0), ipady=5)
+
+        self.btn_pick = ttk.Button(
+            action_row,
+            text="📥 PICK",
+            command=lambda: self._run_cmd(self.pick_cmd),
+            bootstyle="success",
+            width=12,
+        )
+        self.btn_pick.pack(side="left", padx=(10, 0), ipady=5)
 
         ctrl_grid = ttk.Frame(manual_tab)
         ctrl_grid.pack(fill="both", expand=True)
@@ -166,9 +188,13 @@ class RobotDashboard(ttk.Window):
         self.btn_left = ttk.Button(dpad, text="◀", command=lambda: self._run_cmd(self.move_left), bootstyle="primary")
         self.btn_right = ttk.Button(dpad, text="▶", command=lambda: self._run_cmd(self.move_right), bootstyle="primary")
 
+        # 3x3 layout
         self.btn_front.grid(row=0, column=1, padx=5, pady=5, ipadx=10, ipady=10)
+
         self.btn_left.grid(row=1, column=0, padx=5, pady=5, ipadx=10, ipady=10)
+        ttk.Label(dpad, text="●").grid(row=1, column=1)
         self.btn_right.grid(row=1, column=2, padx=5, pady=5, ipadx=10, ipady=10)
+
         self.btn_back.grid(row=2, column=1, padx=5, pady=5, ipadx=10, ipady=10)
 
         ttk.Label(move_frame, text="Arrows", font=("Arial", 8), foreground="gray").pack(side="bottom", pady=5)
@@ -192,7 +218,7 @@ class RobotDashboard(ttk.Window):
         self.btn_cw.pack(side="left", padx=8, pady=5, ipadx=5, ipady=5)
 
         # ------------------------------
-        # Go To Coordinate (Theta in radians)
+        # Go To Coordinate
         goto_frame = ttk.Labelframe(manual_tab, text="📌 Go To Coordinate", padding=15, bootstyle="info")
         goto_frame.pack(fill="x", pady=(15, 0))
 
@@ -277,12 +303,14 @@ class RobotDashboard(ttk.Window):
         frame.grid(row=row, column=col, sticky="ns", padx=5)
         ttk.Label(frame, text=title, font=("Arial", 8), foreground="gray").pack()
         ttk.Label(frame, textvariable=var, font=("Consolas", 14, "bold"), bootstyle="info").pack()
-        
+
     def _set_controls_state(self, enabled: bool):
         state = "normal" if enabled else "disabled"
         for b in [
-            self.reset_btn, self.btn_front, self.btn_back, self.btn_left, self.btn_right,
-            self.btn_cw, self.btn_ccw, self.btn_stop, self.btn_goto, self.btn_use_pose
+            self.reset_btn,
+            self.btn_front, self.btn_back, self.btn_left, self.btn_right,
+            self.btn_cw, self.btn_ccw,
+            self.btn_stop, self.btn_drop, self.btn_pick, self.btn_goto, self.btn_use_pose
         ]:
             b.config(state=state)
 
@@ -425,8 +453,10 @@ class RobotDashboard(ttk.Window):
     def _set_manual_controls_temporarily(self, enabled: bool):
         state = "normal" if enabled else "disabled"
         for b in [
-            self.reset_btn, self.btn_front, self.btn_back, self.btn_left, self.btn_right,
-            self.btn_cw, self.btn_ccw, self.btn_goto, self.btn_use_pose
+            self.reset_btn,
+            self.btn_front, self.btn_back, self.btn_left, self.btn_right,
+            self.btn_cw, self.btn_ccw,
+            self.btn_drop, self.btn_pick, self.btn_goto, self.btn_use_pose
         ]:
             b.config(state=state)
 
@@ -469,6 +499,14 @@ class RobotDashboard(ttk.Window):
 
         threading.Thread(target=worker, daemon=True).start()
 
+    def drop_cmd(self):
+        self._log_line("Send DROP action.")
+        mc.send_drop_order()
+
+    def pick_cmd(self):
+        self._log_line("Send PICK action.")
+        mc.send_pick_order()
+
     def _get_move_val(self) -> float:
         try:
             return float(self.move_step.get())
@@ -480,6 +518,38 @@ class RobotDashboard(ttk.Window):
             return float(self.rotate_step.get())
         except Exception:
             return 0.0
+
+    def _parse_float_input(self, raw: str) -> float:
+        txt = str(raw).strip().replace(",", ".")
+        try:
+            return float(txt)
+        except Exception:
+            pass
+
+        # Accept simple arithmetic expressions like "49.923+1" safely.
+        node = ast.parse(txt, mode="eval")
+
+        def _eval(n):
+            if isinstance(n, ast.Expression):
+                return _eval(n.body)
+            if isinstance(n, ast.Constant) and isinstance(n.value, (int, float)):
+                return float(n.value)
+            if isinstance(n, ast.UnaryOp) and isinstance(n.op, (ast.UAdd, ast.USub)):
+                v = _eval(n.operand)
+                return v if isinstance(n.op, ast.UAdd) else -v
+            if isinstance(n, ast.BinOp) and isinstance(n.op, (ast.Add, ast.Sub, ast.Mult, ast.Div)):
+                l = _eval(n.left)
+                r = _eval(n.right)
+                if isinstance(n.op, ast.Add):
+                    return l + r
+                if isinstance(n.op, ast.Sub):
+                    return l - r
+                if isinstance(n.op, ast.Mult):
+                    return l * r
+                return l / r
+            raise ValueError("invalid numeric expression")
+
+        return float(_eval(node))
 
     def move_front(self):
         d = self._get_move_val()
@@ -518,13 +588,13 @@ class RobotDashboard(ttk.Window):
         pose = mc._get_latest_pose(timeout_s=2.0)
         self.goto_x.set(f"{pose.x:.3f}")
         self.goto_y.set(f"{pose.y:.3f}")
-        self.goto_theta.set(f"{pose.theta:.6f}")  # radians
+        self.goto_theta.set(f"{pose.theta:.6f}")
         self._log_line("Filled GoTo fields from current pose.")
 
     def goto_coordinate_cmd(self):
         try:
-            x = float(self.goto_x.get().strip())
-            y = float(self.goto_y.get().strip())
+            x = self._parse_float_input(self.goto_x.get())
+            y = self._parse_float_input(self.goto_y.get())
         except Exception:
             self._log_line("GoTo error: X/Y must be numeric.")
             return
@@ -533,7 +603,7 @@ class RobotDashboard(ttk.Window):
         theta_rad = None
         if theta_txt:
             try:
-                theta_rad = float(theta_txt)
+                theta_rad = self._parse_float_input(theta_txt)
             except Exception:
                 self._log_line("GoTo error: Theta must be numeric (rad) or empty.")
                 return
@@ -541,7 +611,6 @@ class RobotDashboard(ttk.Window):
         self._log_line(
             f"GoTo: x={x:.3f}, y={y:.3f}, theta(rad)={theta_rad if theta_rad is not None else 'auto'}"
         )
-
         mc.goto_coordinate(x, y, theta_rad=theta_rad)
 
     def on_close(self):

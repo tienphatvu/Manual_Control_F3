@@ -37,7 +37,9 @@ ALLOWED_DEVIATION_XY = 0.1
 ALLOWED_DEVIATION_THETA = math.pi
 ROTATE_ALLOWED_DEVIATION_THETA = 0.2
 ARRIVAL_POLL_INTERVAL_S = 0.2
-ARRIVAL_TIMEOUT_S = 10.0
+ARRIVAL_TIMEOUT_S: Optional[float] = None
+PICK_DROP_FORWARD_OFFSET_M = 0.47
+ROTATE_FORWARD_OFFSET_M = 0.08
 
 ROTATE_SELF = "ROTATE_SELF"
 ROTATE_CLOCKWISE = "ROTATE_CLOCKWISE"
@@ -66,6 +68,7 @@ _state_ready = Event()
 _client: Optional[mqtt.Client] = None
 _current_order_id: str = str(uuid.uuid4())
 _current_update_id: int = 0
+_wait_cancel_event = Event()
 
 
 def _utc_timestamp() -> str:
@@ -76,6 +79,14 @@ def reset_order_session():
     global _current_order_id, _current_update_id
     _current_order_id = str(uuid.uuid4())
     _current_update_id = 0
+
+
+def _clear_wait_cancel():
+    _wait_cancel_event.clear()
+
+
+def _cancel_wait():
+    _wait_cancel_event.set()
 
 
 def _enabled_map_id(state: Dict[str, Any]) -> str:
@@ -253,11 +264,15 @@ def _wait_until_reached(
     *,
     xy_tol: float,
     theta_tol: Optional[float],
-    timeout_s: float,
+    timeout_s: Optional[float],
 ):
-    deadline = time.time() + timeout_s
+    deadline = (time.time() + timeout_s) if (timeout_s is not None) else None
     last_pose: Optional[Pose] = None
-    while time.time() < deadline:
+    while True:
+        if _wait_cancel_event.is_set():
+            raise RuntimeError("Command canceled by emergency stop")
+        if deadline is not None and time.time() >= deadline:
+            break
         pose = _get_latest_pose(timeout_s=2.0)
         last_pose = pose
         dx = pose.x - target.x
@@ -291,6 +306,12 @@ def _compute_target_pose_robot(pose: Pose, forward: float, left: float) -> Pose:
         map_id=pose.map_id,
         map_description=pose.map_description,
     )
+
+
+def _pose_with_forward_offset(pose: Pose, offset_m: float) -> Pose:
+    if offset_m <= 0.0:
+        return pose
+    return _compute_target_pose_robot(pose, forward=offset_m, left=0.0)
 
 
 def _build_order_from_poses(
@@ -420,11 +441,122 @@ def send_cancel_order():
 
 def stop_robot():
     """Stop the robot by sending VDA5050 cancelOrder instant action."""
+    _cancel_wait()
     send_cancel_order()
+
+
+def send_drop_order(
+    *,
+    load_id: str = "0",
+    station_type: str = "FLOOR",
+    load_type: str = "8",
+    height: float = 0.135,
+    blocking_type: str = "HARD",
+):
+    """
+    Send a DROP action as a one-node order at current robot pose.
+    This follows the same payload shape as the sample drop order.
+    """
+    pose = _get_latest_pose(timeout_s=15.0)
+    pose = _pose_with_forward_offset(pose, PICK_DROP_FORWARD_OFFSET_M)
+    order = {
+        "headerId": int(time.time() * 1000),
+        "timestamp": _utc_timestamp(),
+        "version": "2.0.0",
+        "manufacturer": "",
+        "serialNumber": ROBOT_ID,
+        "orderId": str(uuid.uuid4()),
+        "orderUpdateId": 0,
+        "nodes": [
+            {
+                "nodeId": "1",
+                "sequenceId": 0,
+                "released": True,
+                "actions": [
+                    {
+                        "actionType": "drop",
+                        "actionId": f"drop-{int(time.time())}",
+                        "actionDescription": "",
+                        "blockingType": blocking_type,
+                        "actionParameters": [
+                            {"key": "loadId", "value": str(load_id)},
+                            {"key": "stationType", "value": str(station_type)},
+                            {"key": "loadType", "value": str(load_type)},
+                            {"key": "height", "value": float(height)},
+                        ],
+                    }
+                ],
+                "nodePosition": {
+                    "x": float(pose.x),
+                    "y": float(pose.y),
+                    "theta": float(pose.theta),
+                    "mapId": str(pose.map_id),
+                    "allowedDeviationXY": 0.9,
+                    "allowedDeviationTheta": 3.14,
+                },
+            }
+        ],
+    }
+    publish_order(order)
+
+
+def send_pick_order(
+    *,
+    load_id: str = "0",
+    station_type: str = "floor",
+    load_type: str = "8",
+    height: float = 0.135,
+    blocking_type: str = "HARD",
+):
+    """
+    Send a PICK action as a one-node order at current robot pose.
+    """
+    pose = _get_latest_pose(timeout_s=15.0)
+    pose = _pose_with_forward_offset(pose, PICK_DROP_FORWARD_OFFSET_M)
+    order = {
+        "headerId": int(time.time() * 1000),
+        "timestamp": _utc_timestamp(),
+        "version": "2.0.0",
+        "manufacturer": "",
+        "serialNumber": ROBOT_ID,
+        "orderId": str(uuid.uuid4()),
+        "orderUpdateId": 0,
+        "nodes": [
+            {
+                "nodeId": "1",
+                "sequenceId": 0,
+                "released": True,
+                "actions": [
+                    {
+                        "actionType": "pick",
+                        "actionId": f"pick-{int(time.time())}",
+                        "actionDescription": "",
+                        "blockingType": blocking_type,
+                        "actionParameters": [
+                            {"key": "loadId", "value": str(load_id)},
+                            {"key": "stationType", "value": str(station_type)},
+                            {"key": "loadType", "value": str(load_type)},
+                            {"key": "height", "value": float(height)},
+                        ],
+                    }
+                ],
+                "nodePosition": {
+                    "x": float(pose.x),
+                    "y": float(pose.y),
+                    "theta": float(pose.theta),
+                    "mapId": str(pose.map_id),
+                    "allowedDeviationXY": 2.0,
+                    "allowedDeviationTheta": 6.28,
+                },
+            }
+        ],
+    }
+    publish_order(order)
 
 
 def _send_robot_distance(forward: float, left: float):
     reset_order_session()
+    _clear_wait_cancel()
     start = _get_latest_pose(timeout_s=15.0)
     end = _compute_target_pose_robot(start, forward=forward, left=left)
     edge_orientation = math.pi if forward < 0.0 else 0.0
@@ -440,13 +572,15 @@ def _send_robot_distance(forward: float, left: float):
 
 def _send_robot_rotate(delta_theta: float, rotate_direction: str):
     reset_order_session()
+    _clear_wait_cancel()
     start = _get_latest_pose(timeout_s=15.0)
+    rotate_pose = _pose_with_forward_offset(start, ROTATE_FORWARD_OFFSET_M)
     end = Pose(
-        x=start.x,
-        y=start.y,
+        x=rotate_pose.x,
+        y=rotate_pose.y,
         theta=_normalize_angle_rad(start.theta + delta_theta),
-        map_id=start.map_id,
-        map_description=start.map_description,
+        map_id=rotate_pose.map_id,
+        map_description=rotate_pose.map_description,
     )
     order = _build_order_from_poses(start, end, end.theta, end.theta)
     order["nodes"][1]["rotateDirection"] = rotate_direction
@@ -506,13 +640,14 @@ def goto_coordinate(
     y: float,
     *,
     theta_rad: Optional[float] = None,
-    timeout_s: float = ARRIVAL_TIMEOUT_S,
+    timeout_s: Optional[float] = ARRIVAL_TIMEOUT_S,
 ):
     """
     Go to absolute coordinate (x, y) on current map of the robot.
     - theta_rad: optional final heading in radians. If None => face travel direction.
     """
     reset_order_session()
+    _clear_wait_cancel()
 
     start = _get_latest_pose(timeout_s=15.0)
 
@@ -551,48 +686,3 @@ def goto_coordinate(
         theta_tol=None,  # mặc định chỉ check XY
         timeout_s=timeout_s,
     )
-
-
-if __name__ == "__main__":
-    try:
-        reset_order_session()
-        _ensure_client_connected()
-
-        pose = _get_latest_pose(timeout_s=15.0)
-        print(
-            "CURRENT_POSE",
-            f"x={pose.x:.3f}",
-            f"y={pose.y:.3f}",
-            f"theta(rad)={pose.theta:.6f}",
-        )
-
-        mode = input("Mode (move/rotate/goto): ").strip().lower()
-
-        if mode == "goto":
-            x = float(input("X (m): ").strip())
-            y = float(input("Y (m): ").strip())
-            th = input("Theta (rad, optional): ").strip()
-            theta_rad = float(th) if th else None
-            goto_coordinate(x, y, theta_rad=theta_rad)
-        else:
-            val = float(input("Input value (m for move / degree for rotate): ").strip())
-            cmd = input("Input command (front/back/left/right/cw/ccw): ").strip().lower()
-
-            if cmd == "front":
-                manualMove(val, MOVE_FORWARD)
-            elif cmd == "back":
-                manualMove(val, MOVE_BACKWARD)
-            elif cmd == "left":
-                manualMove(val, MOVE_LEFT)
-            elif cmd == "right":
-                manualMove(val, MOVE_RIGHT)
-            elif cmd == "cw":
-                manualRotate(val, ROTATE_CLOCKWISE)
-            elif cmd == "ccw":
-                manualRotate(val, ROTATE_COUNTERCLOCKWISE)
-            else:
-                print("Command not valid")
-
-        time.sleep(0.5)
-    finally:
-        disconnect()
