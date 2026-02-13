@@ -581,9 +581,11 @@ def manualMove(distance: float, direction: str):
     elif direction == MOVE_BACKWARD:
         _send_robot_distance(forward=-distance, left=0.0)
     elif direction == MOVE_LEFT:
-        _send_robot_distance(forward=0.0, left=distance)
+        _send_robot_rotate(delta_theta=math.pi / 2.0, rotate_direction=ROTATE_COUNTERCLOCKWISE)
+        _send_robot_distance(forward=distance, left=0.0)
     elif direction == MOVE_RIGHT:
-        _send_robot_distance(forward=0.0, left=-distance)
+        _send_robot_rotate(delta_theta=-math.pi / 2.0, rotate_direction=ROTATE_CLOCKWISE)
+        _send_robot_distance(forward=distance, left=0.0)
     else:
         raise ValueError(f"Unknown move direction: {direction}")
 

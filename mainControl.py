@@ -39,7 +39,7 @@ ROTATE_ALLOWED_DEVIATION_THETA = 0.2
 ARRIVAL_POLL_INTERVAL_S = 0.2
 ARRIVAL_TIMEOUT_S: Optional[float] = None
 PICK_DROP_FORWARD_OFFSET_M = 0.47
-ROTATE_FORWARD_OFFSET_M = 0.08
+ROTATE_FORWARD_OFFSET_M = 0.07
 
 ROTATE_SELF = "ROTATE_SELF"
 ROTATE_CLOCKWISE = "ROTATE_CLOCKWISE"
@@ -608,9 +608,11 @@ def manualMove(distance: float, direction: str):
     elif direction == MOVE_BACKWARD:
         _send_robot_distance(forward=-distance, left=0.0)
     elif direction == MOVE_LEFT:
-        _send_robot_distance(forward=0.0, left=distance)
+        _send_robot_rotate(delta_theta=math.pi / 2.0, rotate_direction=ROTATE_COUNTERCLOCKWISE)
+        _send_robot_distance(forward=distance, left=0.0)
     elif direction == MOVE_RIGHT:
-        _send_robot_distance(forward=0.0, left=-distance)
+        _send_robot_rotate(delta_theta=-math.pi / 2.0, rotate_direction=ROTATE_CLOCKWISE)
+        _send_robot_distance(forward=distance, left=0.0)
     else:
         raise ValueError(f"Unknown move direction: {direction}")
 
