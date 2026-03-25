@@ -368,20 +368,15 @@ def _target_from_detect_response(response: Dict[str, Any]) -> Dict[str, Any]:
         raise RuntimeError("Detect response missing result")
 
     position = result.get("position")
-    orientation = result.get("orientation")
     if not isinstance(position, dict):
         raise RuntimeError("Detect response missing result.position")
-    if not isinstance(orientation, dict):
-        raise RuntimeError("Detect response missing result.orientation")
 
     x = float(position["x"])
     y = float(position["y"])
-    theta = _yaw_from_quaternion(orientation)
     return {
         "action_id": str(response.get("action_id") or ""),
         "x": x,
         "y": y,
-        "theta": theta,
     }
 
 
@@ -590,7 +585,7 @@ def send_detect_order(timeout_s: float = DETECT_RESPONSE_TIMEOUT_S) -> Dict[str,
         raise
 
     target = _target_from_detect_response(response)
-    goto_coordinate(target["x"], target["y"], theta_rad=target["theta"])
+    goto_coordinate(target["x"], target["y"])
     return target
 
 
