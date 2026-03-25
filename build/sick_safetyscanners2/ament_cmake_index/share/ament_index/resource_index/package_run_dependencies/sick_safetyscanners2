@@ -1,1 +1,0 @@
-boost;diagnostic_updater;rclcpp;rclcpp_components;rclcpp_lifecycle;sensor_msgs;sick_safetyscanners_base;sick_safetyscanners2_interfaces;robot_state_publisher;rviz2;xacro;ament_lint_auto;ament_lint_common;ament_cmake_pytest;launch_testing_ament_cmake;launch_testing_ros;liburdfdom-tools

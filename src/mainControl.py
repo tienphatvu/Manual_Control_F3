@@ -28,9 +28,11 @@ MQTT_TOPIC_ORDER = f"VDA/V2.0.0/Robot/{ROBOT_ID}/order"
 MQTT_TOPIC_STATE = f"VDA/V2.0.0/Robot/{ROBOT_ID}/state"
 MQTT_TOPIC_INSTANTACTIONS = f"VDA/V2.0.0/Robot/{ROBOT_ID}/instantActions"
 MQTT_TOPIC_ACTION_REQUEST = f"amr/{ROBOT_ID}/action/request"
+MQTT_TOPIC_ACTION_RESPONSE = f"amr/{ROBOT_ID}/action/response"
 
 MQTT_QOS = 0
 MQTT_RETAIN = False
+DETECT_RESPONSE_TIMEOUT_S = 30.0
 
 MAX_SPEED = 0.5
 DEFAULT_MAP_DESCRIPTION = "default"
@@ -72,6 +74,10 @@ _client: Optional[mqtt.Client] = None
 _current_order_id: str = str(uuid.uuid4())
 _current_update_id: int = 0
 _wait_cancel_event = Event()
+_detect_response_event = Event()
+_detect_lock = Lock()
+_pending_detect_action_id: Optional[str] = None
+_latest_detect_response: Optional[Dict[str, Any]] = None
 
 
 def _utc_timestamp() -> str:
@@ -90,6 +96,24 @@ def _clear_wait_cancel():
 
 def _cancel_wait():
     _wait_cancel_event.set()
+
+
+def _prepare_detect_wait(action_id: str):
+    global _pending_detect_action_id, _latest_detect_response
+    with _detect_lock:
+        _pending_detect_action_id = action_id
+        _latest_detect_response = None
+        _detect_response_event.clear()
+
+
+def _clear_detect_wait(action_id: Optional[str] = None):
+    global _pending_detect_action_id, _latest_detect_response
+    with _detect_lock:
+        if action_id is not None and _pending_detect_action_id != action_id:
+            return
+        _pending_detect_action_id = None
+        _latest_detect_response = None
+        _detect_response_event.clear()
 
 
 def _enabled_map_id(state: Dict[str, Any]) -> str:
@@ -167,25 +191,48 @@ def _on_connect(client: mqtt.Client, userdata: Any, flags: Dict[str, Any], reaso
     rc = getattr(reason_code, "value", reason_code)
     if rc == 0:
         client.subscribe(MQTT_TOPIC_STATE, qos=MQTT_QOS)
+        client.subscribe(MQTT_TOPIC_ACTION_RESPONSE, qos=MQTT_QOS)
 
 
 def _on_message(client: mqtt.Client, userdata: Any, msg: mqtt.MQTTMessage):
-    global _latest_pose, _latest_state
-    if msg.topic != MQTT_TOPIC_STATE:
-        return
     try:
-        state = json.loads(msg.payload.decode("utf-8", errors="replace"))
+        payload = json.loads(msg.payload.decode("utf-8", errors="replace"))
     except Exception:
         return
-    with _pose_lock:
-        _latest_state = state
-        _state_ready.set()
-    pose = _try_parse_pose_from_state(state)
-    if pose is None:
+
+    if msg.topic == MQTT_TOPIC_STATE:
+        global _latest_pose, _latest_state
+        state = payload
+        with _pose_lock:
+            _latest_state = state
+            _state_ready.set()
+        pose = _try_parse_pose_from_state(state)
+        if pose is None:
+            return
+        with _pose_lock:
+            _latest_pose = pose
+            _pose_ready.set()
         return
-    with _pose_lock:
-        _latest_pose = pose
-        _pose_ready.set()
+
+    if msg.topic != MQTT_TOPIC_ACTION_RESPONSE:
+        return
+
+    if not isinstance(payload, dict):
+        return
+
+    if str(payload.get("action_type") or "") != "detect_object":
+        return
+
+    action_id = str(payload.get("action_id") or "")
+    if not action_id:
+        return
+
+    global _latest_detect_response
+    with _detect_lock:
+        if action_id != _pending_detect_action_id:
+            return
+        _latest_detect_response = payload
+        _detect_response_event.set()
 
 
 def _ensure_client_connected() -> mqtt.Client:
@@ -216,6 +263,7 @@ def _ensure_client_connected() -> mqtt.Client:
 
 def disconnect():
     global _client
+    _clear_detect_wait()
     if _client is not None:
         _client.loop_stop()
         _client.disconnect()
@@ -260,6 +308,81 @@ def _normalize_angle_rad(theta: float) -> float:
 
 def _angle_diff_rad(a: float, b: float) -> float:
     return _normalize_angle_rad(a - b)
+
+
+def _yaw_from_quaternion(orientation: Dict[str, Any]) -> float:
+    w = float(orientation.get("w", 1.0))
+    x = float(orientation.get("x", 0.0))
+    y = float(orientation.get("y", 0.0))
+    z = float(orientation.get("z", 0.0))
+    siny_cosp = 2.0 * (w * z + x * y)
+    cosy_cosp = 1.0 - 2.0 * (y * y + z * z)
+    return _normalize_angle_rad(math.atan2(siny_cosp, cosy_cosp))
+
+
+def _wait_for_detect_response(action_id: str, timeout_s: Optional[float]) -> Dict[str, Any]:
+    deadline = (time.time() + timeout_s) if (timeout_s is not None) else None
+    while True:
+        if _wait_cancel_event.is_set():
+            _clear_detect_wait(action_id)
+            raise RuntimeError("Detect canceled by emergency stop")
+
+        timeout = 0.2
+        if deadline is not None:
+            remaining = deadline - time.time()
+            if remaining <= 0.0:
+                break
+            timeout = min(timeout, remaining)
+
+        if not _detect_response_event.wait(timeout=timeout):
+            continue
+
+        with _detect_lock:
+            if action_id != _pending_detect_action_id or _latest_detect_response is None:
+                _detect_response_event.clear()
+                continue
+            response = json.loads(json.dumps(_latest_detect_response))
+            _pending = _pending_detect_action_id
+            _clear = _pending == action_id
+
+        if _clear:
+            _clear_detect_wait(action_id)
+            return response
+
+    _clear_detect_wait(action_id)
+    raise RuntimeError(f"Timeout waiting detect response on {MQTT_TOPIC_ACTION_RESPONSE}")
+
+
+def _target_from_detect_response(response: Dict[str, Any]) -> Dict[str, Any]:
+    if not isinstance(response, dict):
+        raise RuntimeError("Invalid detect response payload")
+
+    status = str(response.get("status") or "")
+    if status.lower() != "success":
+        raise RuntimeError(
+            f"Detect failed: status={status or 'unknown'} payload={json.dumps(response, ensure_ascii=False)}"
+        )
+
+    result = response.get("result")
+    if not isinstance(result, dict):
+        raise RuntimeError("Detect response missing result")
+
+    position = result.get("position")
+    orientation = result.get("orientation")
+    if not isinstance(position, dict):
+        raise RuntimeError("Detect response missing result.position")
+    if not isinstance(orientation, dict):
+        raise RuntimeError("Detect response missing result.orientation")
+
+    x = float(position["x"])
+    y = float(position["y"])
+    theta = _yaw_from_quaternion(orientation)
+    return {
+        "action_id": str(response.get("action_id") or ""),
+        "x": x,
+        "y": y,
+        "theta": theta,
+    }
 
 
 def _wait_until_reached(
@@ -442,21 +565,33 @@ def send_cancel_order():
     info.wait_for_publish()
 
 
-def send_detect_order():
+def send_detect_order(timeout_s: float = DETECT_RESPONSE_TIMEOUT_S) -> Dict[str, Any]:
+    _clear_wait_cancel()
     client = _ensure_client_connected()
+    action_id = str(uuid.uuid4())
+    _prepare_detect_wait(action_id)
     message = {
-        "action_id": str(uuid.uuid4()),
+        "action_id": action_id,
         "action_type": "detect_object",
         "params": "",
     }
-    payload = json.dumps(message, ensure_ascii=False)
-    info = client.publish(
-        MQTT_TOPIC_ACTION_REQUEST,
-        payload=payload,
-        qos=MQTT_QOS,
-        retain=MQTT_RETAIN,
-    )
-    info.wait_for_publish()
+    try:
+        payload = json.dumps(message, ensure_ascii=False)
+        info = client.publish(
+            MQTT_TOPIC_ACTION_REQUEST,
+            payload=payload,
+            qos=MQTT_QOS,
+            retain=MQTT_RETAIN,
+        )
+        info.wait_for_publish()
+        response = _wait_for_detect_response(action_id, timeout_s=timeout_s)
+    except Exception:
+        _clear_detect_wait(action_id)
+        raise
+
+    target = _target_from_detect_response(response)
+    goto_coordinate(target["x"], target["y"], theta_rad=target["theta"])
+    return target
 
 
 def stop_robot():

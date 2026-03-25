@@ -517,8 +517,11 @@ class RobotDashboard(ttk.Window):
         mc.send_pick_order()
 
     def detect_cmd(self):
-        self._log_line("Send DETECT action to amr/987/action/request.")
-        mc.send_detect_order()
+        self._log_line("Send DETECT action. Waiting response and auto-GoTo target.")
+        target = mc.send_detect_order()
+        self._log_line(
+            f"Detect success. Reached x={target['x']:.3f}, y={target['y']:.3f}, theta={target['theta']:.3f} rad."
+        )
 
     def _get_move_val(self) -> float:
         try:
