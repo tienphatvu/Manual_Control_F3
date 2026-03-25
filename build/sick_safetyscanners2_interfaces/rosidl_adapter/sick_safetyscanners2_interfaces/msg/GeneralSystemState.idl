@@ -1,0 +1,40 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from sick_safetyscanners2_interfaces/msg/GeneralSystemState.msg
+// generated code does not contain a copyright notice
+
+
+module sick_safetyscanners2_interfaces {
+  module msg {
+    struct GeneralSystemState {
+      boolean run_mode_active;
+
+      boolean standby_mode_active;
+
+      boolean contamination_warning;
+
+      boolean contamination_error;
+
+      boolean reference_contour_status;
+
+      boolean manipulation_status;
+
+      sequence<boolean> safe_cut_off_path;
+
+      sequence<boolean> non_safe_cut_off_path;
+
+      sequence<boolean> reset_required_cut_off_path;
+
+      uint8 current_monitoring_case_no_table_1;
+
+      uint8 current_monitoring_case_no_table_2;
+
+      uint8 current_monitoring_case_no_table_3;
+
+      uint8 current_monitoring_case_no_table_4;
+
+      boolean application_error;
+
+      boolean device_error;
+    };
+  };
+};

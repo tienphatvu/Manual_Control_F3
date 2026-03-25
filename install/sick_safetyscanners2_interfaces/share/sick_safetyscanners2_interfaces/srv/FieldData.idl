@@ -1,0 +1,21 @@
+// generated from rosidl_adapter/resource/srv.idl.em
+// with input from sick_safetyscanners2_interfaces/srv/FieldData.srv
+// generated code does not contain a copyright notice
+
+#include "sick_safetyscanners2_interfaces/msg/Field.idl"
+#include "sick_safetyscanners2_interfaces/msg/MonitoringCase.idl"
+
+module sick_safetyscanners2_interfaces {
+  module srv {
+    struct FieldData_Request {
+      uint8 structure_needs_at_least_one_member;
+    };
+    struct FieldData_Response {
+      sequence<sick_safetyscanners2_interfaces::msg::Field> fields;
+
+      string device_name;
+
+      sequence<sick_safetyscanners2_interfaces::msg::MonitoringCase> monitoring_cases;
+    };
+  };
+};

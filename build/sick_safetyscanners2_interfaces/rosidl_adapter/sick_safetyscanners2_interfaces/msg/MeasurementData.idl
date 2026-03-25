@@ -1,0 +1,15 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from sick_safetyscanners2_interfaces/msg/MeasurementData.msg
+// generated code does not contain a copyright notice
+
+#include "sick_safetyscanners2_interfaces/msg/ScanPoint.idl"
+
+module sick_safetyscanners2_interfaces {
+  module msg {
+    struct MeasurementData {
+      uint32 number_of_beams;
+
+      sequence<sick_safetyscanners2_interfaces::msg::ScanPoint> scan_points;
+    };
+  };
+};

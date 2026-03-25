@@ -1,0 +1,13 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from sick_safetyscanners2_interfaces/msg/IntrusionData.msg
+// generated code does not contain a copyright notice
+
+#include "sick_safetyscanners2_interfaces/msg/IntrusionDatum.idl"
+
+module sick_safetyscanners2_interfaces {
+  module msg {
+    struct IntrusionData {
+      sequence<sick_safetyscanners2_interfaces::msg::IntrusionDatum> data;
+    };
+  };
+};

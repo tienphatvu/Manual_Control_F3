@@ -1,0 +1,259 @@
+// generated from rosidl_generator_c/resource/idl__functions.c.em
+// with input from sick_safetyscanners2_interfaces:msg/MeasurementData.idl
+// generated code does not contain a copyright notice
+#include "sick_safetyscanners2_interfaces/msg/detail/measurement_data__functions.h"
+
+#include <assert.h>
+#include <stdbool.h>
+#include <stdlib.h>
+#include <string.h>
+
+#include "rcutils/allocator.h"
+
+
+// Include directives for member types
+// Member `scan_points`
+#include "sick_safetyscanners2_interfaces/msg/detail/scan_point__functions.h"
+
+bool
+sick_safetyscanners2_interfaces__msg__MeasurementData__init(sick_safetyscanners2_interfaces__msg__MeasurementData * msg)
+{
+  if (!msg) {
+    return false;
+  }
+  // number_of_beams
+  // scan_points
+  if (!sick_safetyscanners2_interfaces__msg__ScanPoint__Sequence__init(&msg->scan_points, 0)) {
+    sick_safetyscanners2_interfaces__msg__MeasurementData__fini(msg);
+    return false;
+  }
+  return true;
+}
+
+void
+sick_safetyscanners2_interfaces__msg__MeasurementData__fini(sick_safetyscanners2_interfaces__msg__MeasurementData * msg)
+{
+  if (!msg) {
+    return;
+  }
+  // number_of_beams
+  // scan_points
+  sick_safetyscanners2_interfaces__msg__ScanPoint__Sequence__fini(&msg->scan_points);
+}
+
+bool
+sick_safetyscanners2_interfaces__msg__MeasurementData__are_equal(const sick_safetyscanners2_interfaces__msg__MeasurementData * lhs, const sick_safetyscanners2_interfaces__msg__MeasurementData * rhs)
+{
+  if (!lhs || !rhs) {
+    return false;
+  }
+  // number_of_beams
+  if (lhs->number_of_beams != rhs->number_of_beams) {
+    return false;
+  }
+  // scan_points
+  if (!sick_safetyscanners2_interfaces__msg__ScanPoint__Sequence__are_equal(
+      &(lhs->scan_points), &(rhs->scan_points)))
+  {
+    return false;
+  }
+  return true;
+}
+
+bool
+sick_safetyscanners2_interfaces__msg__MeasurementData__copy(
+  const sick_safetyscanners2_interfaces__msg__MeasurementData * input,
+  sick_safetyscanners2_interfaces__msg__MeasurementData * output)
+{
+  if (!input || !output) {
+    return false;
+  }
+  // number_of_beams
+  output->number_of_beams = input->number_of_beams;
+  // scan_points
+  if (!sick_safetyscanners2_interfaces__msg__ScanPoint__Sequence__copy(
+      &(input->scan_points), &(output->scan_points)))
+  {
+    return false;
+  }
+  return true;
+}
+
+sick_safetyscanners2_interfaces__msg__MeasurementData *
+sick_safetyscanners2_interfaces__msg__MeasurementData__create()
+{
+  rcutils_allocator_t allocator = rcutils_get_default_allocator();
+  sick_safetyscanners2_interfaces__msg__MeasurementData * msg = (sick_safetyscanners2_interfaces__msg__MeasurementData *)allocator.allocate(sizeof(sick_safetyscanners2_interfaces__msg__MeasurementData), allocator.state);
+  if (!msg) {
+    return NULL;
+  }
+  memset(msg, 0, sizeof(sick_safetyscanners2_interfaces__msg__MeasurementData));
+  bool success = sick_safetyscanners2_interfaces__msg__MeasurementData__init(msg);
+  if (!success) {
+    allocator.deallocate(msg, allocator.state);
+    return NULL;
+  }
+  return msg;
+}
+
+void
+sick_safetyscanners2_interfaces__msg__MeasurementData__destroy(sick_safetyscanners2_interfaces__msg__MeasurementData * msg)
+{
+  rcutils_allocator_t allocator = rcutils_get_default_allocator();
+  if (msg) {
+    sick_safetyscanners2_interfaces__msg__MeasurementData__fini(msg);
+  }
+  allocator.deallocate(msg, allocator.state);
+}
+
+
+bool
+sick_safetyscanners2_interfaces__msg__MeasurementData__Sequence__init(sick_safetyscanners2_interfaces__msg__MeasurementData__Sequence * array, size_t size)
+{
+  if (!array) {
+    return false;
+  }
+  rcutils_allocator_t allocator = rcutils_get_default_allocator();
+  sick_safetyscanners2_interfaces__msg__MeasurementData * data = NULL;
+
+  if (size) {
+    data = (sick_safetyscanners2_interfaces__msg__MeasurementData *)allocator.zero_allocate(size, sizeof(sick_safetyscanners2_interfaces__msg__MeasurementData), allocator.state);
+    if (!data) {
+      return false;
+    }
+    // initialize all array elements
+    size_t i;
+    for (i = 0; i < size; ++i) {
+      bool success = sick_safetyscanners2_interfaces__msg__MeasurementData__init(&data[i]);
+      if (!success) {
+        break;
+      }
+    }
+    if (i < size) {
+      // if initialization failed finalize the already initialized array elements
+      for (; i > 0; --i) {
+        sick_safetyscanners2_interfaces__msg__MeasurementData__fini(&data[i - 1]);
+      }
+      allocator.deallocate(data, allocator.state);
+      return false;
+    }
+  }
+  array->data = data;
+  array->size = size;
+  array->capacity = size;
+  return true;
+}
+
+void
+sick_safetyscanners2_interfaces__msg__MeasurementData__Sequence__fini(sick_safetyscanners2_interfaces__msg__MeasurementData__Sequence * array)
+{
+  if (!array) {
+    return;
+  }
+  rcutils_allocator_t allocator = rcutils_get_default_allocator();
+
+  if (array->data) {
+    // ensure that data and capacity values are consistent
+    assert(array->capacity > 0);
+    // finalize all array elements
+    for (size_t i = 0; i < array->capacity; ++i) {
+      sick_safetyscanners2_interfaces__msg__MeasurementData__fini(&array->data[i]);
+    }
+    allocator.deallocate(array->data, allocator.state);
+    array->data = NULL;
+    array->size = 0;
+    array->capacity = 0;
+  } else {
+    // ensure that data, size, and capacity values are consistent
+    assert(0 == array->size);
+    assert(0 == array->capacity);
+  }
+}
+
+sick_safetyscanners2_interfaces__msg__MeasurementData__Sequence *
+sick_safetyscanners2_interfaces__msg__MeasurementData__Sequence__create(size_t size)
+{
+  rcutils_allocator_t allocator = rcutils_get_default_allocator();
+  sick_safetyscanners2_interfaces__msg__MeasurementData__Sequence * array = (sick_safetyscanners2_interfaces__msg__MeasurementData__Sequence *)allocator.allocate(sizeof(sick_safetyscanners2_interfaces__msg__MeasurementData__Sequence), allocator.state);
+  if (!array) {
+    return NULL;
+  }
+  bool success = sick_safetyscanners2_interfaces__msg__MeasurementData__Sequence__init(array, size);
+  if (!success) {
+    allocator.deallocate(array, allocator.state);
+    return NULL;
+  }
+  return array;
+}
+
+void
+sick_safetyscanners2_interfaces__msg__MeasurementData__Sequence__destroy(sick_safetyscanners2_interfaces__msg__MeasurementData__Sequence * array)
+{
+  rcutils_allocator_t allocator = rcutils_get_default_allocator();
+  if (array) {
+    sick_safetyscanners2_interfaces__msg__MeasurementData__Sequence__fini(array);
+  }
+  allocator.deallocate(array, allocator.state);
+}
+
+bool
+sick_safetyscanners2_interfaces__msg__MeasurementData__Sequence__are_equal(const sick_safetyscanners2_interfaces__msg__MeasurementData__Sequence * lhs, const sick_safetyscanners2_interfaces__msg__MeasurementData__Sequence * rhs)
+{
+  if (!lhs || !rhs) {
+    return false;
+  }
+  if (lhs->size != rhs->size) {
+    return false;
+  }
+  for (size_t i = 0; i < lhs->size; ++i) {
+    if (!sick_safetyscanners2_interfaces__msg__MeasurementData__are_equal(&(lhs->data[i]), &(rhs->data[i]))) {
+      return false;
+    }
+  }
+  return true;
+}
+
+bool
+sick_safetyscanners2_interfaces__msg__MeasurementData__Sequence__copy(
+  const sick_safetyscanners2_interfaces__msg__MeasurementData__Sequence * input,
+  sick_safetyscanners2_interfaces__msg__MeasurementData__Sequence * output)
+{
+  if (!input || !output) {
+    return false;
+  }
+  if (output->capacity < input->size) {
+    const size_t allocation_size =
+      input->size * sizeof(sick_safetyscanners2_interfaces__msg__MeasurementData);
+    rcutils_allocator_t allocator = rcutils_get_default_allocator();
+    sick_safetyscanners2_interfaces__msg__MeasurementData * data =
+      (sick_safetyscanners2_interfaces__msg__MeasurementData *)allocator.reallocate(
+      output->data, allocation_size, allocator.state);
+    if (!data) {
+      return false;
+    }
+    // If reallocation succeeded, memory may or may not have been moved
+    // to fulfill the allocation request, invalidating output->data.
+    output->data = data;
+    for (size_t i = output->capacity; i < input->size; ++i) {
+      if (!sick_safetyscanners2_interfaces__msg__MeasurementData__init(&output->data[i])) {
+        // If initialization of any new item fails, roll back
+        // all previously initialized items. Existing items
+        // in output are to be left unmodified.
+        for (; i-- > output->capacity; ) {
+          sick_safetyscanners2_interfaces__msg__MeasurementData__fini(&output->data[i]);
+        }
+        return false;
+      }
+    }
+    output->capacity = input->size;
+  }
+  output->size = input->size;
+  for (size_t i = 0; i < input->size; ++i) {
+    if (!sick_safetyscanners2_interfaces__msg__MeasurementData__copy(
+        &(input->data[i]), &(output->data[i])))
+    {
+      return false;
+    }
+  }
+  return true;
+}

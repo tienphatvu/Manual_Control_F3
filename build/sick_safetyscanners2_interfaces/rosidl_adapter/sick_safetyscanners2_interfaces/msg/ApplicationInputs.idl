@@ -1,0 +1,32 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from sick_safetyscanners2_interfaces/msg/ApplicationInputs.msg
+// generated code does not contain a copyright notice
+
+
+module sick_safetyscanners2_interfaces {
+  module msg {
+    struct ApplicationInputs {
+      sequence<boolean> unsafe_inputs_input_sources;
+
+      sequence<boolean> unsafe_inputs_flags;
+
+      sequence<uint16> monitoring_case_number_inputs;
+
+      sequence<boolean> monitoring_case_number_inputs_flags;
+
+      int16 linear_velocity_inputs_velocity_0;
+
+      boolean linear_velocity_inputs_velocity_0_valid;
+
+      boolean linear_velocity_inputs_velocity_0_transmitted_safely;
+
+      int16 linear_velocity_inputs_velocity_1;
+
+      boolean linear_velocity_inputs_velocity_1_valid;
+
+      boolean linear_velocity_inputs_velocity_1_transmitted_safely;
+
+      uint8 sleep_mode_input;
+    };
+  };
+};

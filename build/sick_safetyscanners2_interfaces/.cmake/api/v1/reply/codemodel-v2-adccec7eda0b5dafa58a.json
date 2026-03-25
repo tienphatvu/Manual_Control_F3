@@ -1,0 +1,233 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"childIndexes" : 
+					[
+						1
+					],
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-de3e8df553491ca093c2.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.12"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						5,
+						6,
+						7,
+						8,
+						9,
+						10,
+						11,
+						12,
+						13,
+						14,
+						15,
+						16,
+						17
+					]
+				},
+				{
+					"build" : "sick_safetyscanners2_interfaces__py",
+					"jsonFile" : "directory-sick_safetyscanners2_interfaces__py-e5131b0f9c60979b4cd5.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.12"
+					},
+					"parentIndex" : 0,
+					"projectIndex" : 0,
+					"source" : "/home/nrc/Manual_Control_F3/build/sick_safetyscanners2_interfaces/sick_safetyscanners2_interfaces__py",
+					"targetIndexes" : 
+					[
+						4
+					]
+				}
+			],
+			"name" : "",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0,
+						1
+					],
+					"name" : "sick_safetyscanners2_interfaces",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4,
+						5,
+						6,
+						7,
+						8,
+						9,
+						10,
+						11,
+						12,
+						13,
+						14,
+						15,
+						16,
+						17
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "ament_cmake_python_build_sick_safetyscanners2_interfaces_egg::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ament_cmake_python_build_sick_safetyscanners2_interfaces_egg-a1b42f1befb7a7c96ce9.json",
+					"name" : "ament_cmake_python_build_sick_safetyscanners2_interfaces_egg",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "ament_cmake_python_copy_sick_safetyscanners2_interfaces::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-ament_cmake_python_copy_sick_safetyscanners2_interfaces-848f404381812625407b.json",
+					"name" : "ament_cmake_python_copy_sick_safetyscanners2_interfaces",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "sick_safetyscanners2_interfaces::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-sick_safetyscanners2_interfaces-b866265869ffe68d711c.json",
+					"name" : "sick_safetyscanners2_interfaces",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "sick_safetyscanners2_interfaces__cpp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-sick_safetyscanners2_interfaces__cpp-bfef27d3bb3454dc9770.json",
+					"name" : "sick_safetyscanners2_interfaces__cpp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 1,
+					"id" : "sick_safetyscanners2_interfaces__py::@e12f2316eb6492661dcd",
+					"jsonFile" : "target-sick_safetyscanners2_interfaces__py-8949b5234873b0b5a104.json",
+					"name" : "sick_safetyscanners2_interfaces__py",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "sick_safetyscanners2_interfaces__rosidl_generator_c::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-sick_safetyscanners2_interfaces__rosidl_generator_c-8e2aea044bb15c321f83.json",
+					"name" : "sick_safetyscanners2_interfaces__rosidl_generator_c",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "sick_safetyscanners2_interfaces__rosidl_generator_py::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-sick_safetyscanners2_interfaces__rosidl_generator_py-459cd0effb6a6ad54136.json",
+					"name" : "sick_safetyscanners2_interfaces__rosidl_generator_py",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "sick_safetyscanners2_interfaces__rosidl_typesupport_c::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-sick_safetyscanners2_interfaces__rosidl_typesupport_c-76abd3399ac45c855641.json",
+					"name" : "sick_safetyscanners2_interfaces__rosidl_typesupport_c",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "sick_safetyscanners2_interfaces__rosidl_typesupport_c__pyext::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-sick_safetyscanners2_interfaces__rosidl_typesupport_c__pyext-01dff460173c8616635f.json",
+					"name" : "sick_safetyscanners2_interfaces__rosidl_typesupport_c__pyext",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "sick_safetyscanners2_interfaces__rosidl_typesupport_cpp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-sick_safetyscanners2_interfaces__rosidl_typesupport_cpp-88466cfcd9a8f34e9fc8.json",
+					"name" : "sick_safetyscanners2_interfaces__rosidl_typesupport_cpp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "sick_safetyscanners2_interfaces__rosidl_typesupport_fastrtps_c::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-sick_safetyscanners2_interfaces__rosidl_typesupport_fastrtps_c-8f0bceaa219a87e8f239.json",
+					"name" : "sick_safetyscanners2_interfaces__rosidl_typesupport_fastrtps_c",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "sick_safetyscanners2_interfaces__rosidl_typesupport_fastrtps_c__pyext::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-sick_safetyscanners2_interfaces__rosidl_typesupport_fastrtps_c__pyext-72a2c7a5feefcb58a410.json",
+					"name" : "sick_safetyscanners2_interfaces__rosidl_typesupport_fastrtps_c__pyext",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "sick_safetyscanners2_interfaces__rosidl_typesupport_fastrtps_cpp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-sick_safetyscanners2_interfaces__rosidl_typesupport_fastrtps_cpp-872e0eefb639f2e178ee.json",
+					"name" : "sick_safetyscanners2_interfaces__rosidl_typesupport_fastrtps_cpp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "sick_safetyscanners2_interfaces__rosidl_typesupport_introspection_c::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-sick_safetyscanners2_interfaces__rosidl_typesupport_introspection_c-12c0405df9f657c1b93e.json",
+					"name" : "sick_safetyscanners2_interfaces__rosidl_typesupport_introspection_c",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "sick_safetyscanners2_interfaces__rosidl_typesupport_introspection_c__pyext::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-sick_safetyscanners2_interfaces__rosidl_typesupport_introspection_c__pyext-13348900db373dea899b.json",
+					"name" : "sick_safetyscanners2_interfaces__rosidl_typesupport_introspection_c__pyext",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "sick_safetyscanners2_interfaces__rosidl_typesupport_introspection_cpp::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-sick_safetyscanners2_interfaces__rosidl_typesupport_introspection_cpp-4ebdc3546da4ef477183.json",
+					"name" : "sick_safetyscanners2_interfaces__rosidl_typesupport_introspection_cpp",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "sick_safetyscanners2_interfaces_uninstall::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-sick_safetyscanners2_interfaces_uninstall-2fe59ec71c270f5a3b2a.json",
+					"name" : "sick_safetyscanners2_interfaces_uninstall",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "uninstall::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-uninstall-9f0322fbdeac81a41f64.json",
+					"name" : "uninstall",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/home/nrc/Manual_Control_F3/build/sick_safetyscanners2_interfaces",
+		"source" : "/home/nrc/Manual_Control_F3/src/sick_safetyscanners2_interfaces"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 3
+	}
+}

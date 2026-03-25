@@ -1,0 +1,49 @@
+{
+    "headerId": 7,
+    "manufacturer": "HikRobot",
+    "nodes": [
+        {
+            "actions": [
+                {
+                    "actionDescription": "pick",
+                    "actionId": "37622b52-cd8e-4b6b-a772-24af4452942b",
+                    "actionParameters": [
+                        {
+                            "key": "loadType",
+                            "value": "8"
+                        },
+                        {
+                            "key": "loadId",
+                            "value": "0"
+                        },
+                        {
+                            "key": "stationType",
+                            "value": "floor"
+                        }
+                    ],
+                    "actionType": "pick",
+                    "blockingType": "HARD"
+                }
+            ],
+            "nodeDescription": "Odom node",
+            "nodeId": "0",
+            "nodePosition": {
+                "allowedDeviationTheta": 3.141592653589793,
+                "allowedDeviationXy": 1.5,
+                "mapDescription": "default",
+                "mapId": "1c5f93b1-e5e7-4ef8-afb3-d15fdb94b061",
+                "theta": 3.135763253888132,
+                "x": -0.037,
+                "y": -2.151
+            },
+            "released": true,
+            "sequenceId": 0
+        }
+    ],
+    "orderId": "c0e82836-b25a-4ae8-956d-c1b2d6b52c10",
+    "orderUpdateId": 0,
+    "serialNumber": "987",
+    "timestamp": "2026-03-23T13:12:07Z",
+    "version": "2.0.0",
+    "zoneSetId": ""
+}

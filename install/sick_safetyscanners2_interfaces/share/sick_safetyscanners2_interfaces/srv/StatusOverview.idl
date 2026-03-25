@@ -1,0 +1,47 @@
+// generated from rosidl_adapter/resource/srv.idl.em
+// with input from sick_safetyscanners2_interfaces/srv/StatusOverview.srv
+// generated code does not contain a copyright notice
+
+
+module sick_safetyscanners2_interfaces {
+  module srv {
+    struct StatusOverview_Request {
+      uint8 structure_needs_at_least_one_member;
+    };
+    struct StatusOverview_Response {
+      string version_c_version;
+
+      uint8 version_major_version_number;
+
+      uint8 version_minor_version_number;
+
+      uint8 version_release_number;
+
+      uint8 device_state;
+
+      uint8 config_state;
+
+      uint8 application_state;
+
+      uint32 current_time_power_on_count;
+
+      string current_time;
+
+      @verbatim (language="comment", text=
+        "for devices without real time clock, also provide the raw time information")
+      uint32 current_time_time;
+
+      uint16 current_time_date;
+
+      uint32 error_info_code;
+
+      string error_info_time;
+
+      @verbatim (language="comment", text=
+        "for devices without real time clock, also provide the raw time information")
+      uint32 error_info_time_time;
+
+      uint16 error_info_time_date;
+    };
+  };
+};

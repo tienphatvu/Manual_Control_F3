@@ -1,0 +1,22 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from sick_safetyscanners2_interfaces/msg/DerivedValues.msg
+// generated code does not contain a copyright notice
+
+
+module sick_safetyscanners2_interfaces {
+  module msg {
+    struct DerivedValues {
+      uint16 multiplication_factor;
+
+      uint16 number_of_beams;
+
+      uint16 scan_time;
+
+      float start_angle;
+
+      float angular_beam_resolution;
+
+      uint32 interbeam_period;
+    };
+  };
+};
