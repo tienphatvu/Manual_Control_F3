@@ -224,12 +224,10 @@ def _on_message(client: mqtt.Client, userdata: Any, msg: mqtt.MQTTMessage):
         return
 
     action_id = str(payload.get("action_id") or "")
-    if not action_id:
-        return
 
     global _latest_detect_response
     with _detect_lock:
-        if action_id != _pending_detect_action_id:
+        if _pending_detect_action_id is None:
             return
         _latest_detect_response = payload
         _detect_response_event.set()
@@ -585,7 +583,7 @@ def send_detect_order(timeout_s: float = DETECT_RESPONSE_TIMEOUT_S) -> Dict[str,
         raise
 
     target = _target_from_detect_response(response)
-    goto_coordinate(target["x"], target["y"])
+    goto_coordinate(target["x"], target["y"], wait_until_reached=False)
     return target
 
 
@@ -793,6 +791,7 @@ def goto_coordinate(
     *,
     theta_rad: Optional[float] = None,
     timeout_s: Optional[float] = ARRIVAL_TIMEOUT_S,
+    wait_until_reached: bool = True,
 ):
     """
     Go to absolute coordinate (x, y) on current map of the robot.
@@ -825,6 +824,9 @@ def goto_coordinate(
     publish_order(_build_order_from_poses(start, end, edge_orientation, end_theta_override))
 
     expected_theta = end_theta_override if end_theta_override is not None else travel_theta
+
+    if not wait_until_reached:
+        return
 
     _wait_until_reached(
         Pose(

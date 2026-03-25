@@ -520,7 +520,7 @@ class RobotDashboard(ttk.Window):
         self._log_line("Send DETECT action. Waiting response and auto-GoTo target.")
         target = mc.send_detect_order()
         self._log_line(
-            f"Detect success. Reached x={target['x']:.3f}, y={target['y']:.3f}."
+            f"Detect success. Sent GoTo order to x={target['x']:.3f}, y={target['y']:.3f}."
         )
 
     def _get_move_val(self) -> float:
